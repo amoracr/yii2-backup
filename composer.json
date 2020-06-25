@@ -1,0 +1,21 @@
+{
+    "name": "amoracr/yii2-backup",
+    "description": "Component for creating backups of Yii2 sites.",
+    "type": "yii2-extension",
+    "keywords": ["yii2","backup","dump"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alonso Mora",
+            "email": "adelfunscr@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "amoracr\\backup\\": ""
+        }
+    }
+}
