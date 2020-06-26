@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "amoracr\\backup\\": ""
+            "amoracr\\backup\\": "src"
         }
     }
 }
