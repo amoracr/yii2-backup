@@ -20,11 +20,11 @@ class Mysql extends DbConnector
         }
     }
 
-    public function dumpDatabase($db)
+    public function dumpDatabase($db, $path)
     {
         $this->validateDumpCommand();
         $dumpCommand = $this->prepareDbCommand($db, $this->dumpCommand);
-        $file = \Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR . $db . '.sql';
+        $file = \Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
         $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
 
@@ -40,9 +40,9 @@ class Mysql extends DbConnector
         $command = $templateCommand;
         $database = \Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
         $params = [
-            'username' => Yii::$app->$dbHandle->username,
+            'username' => \Yii::$app->$dbHandle->username,
             'host' => 'localhost',
-            'password' => Yii::$app->$dbHandle->password,
+            'password' => \Yii::$app->$dbHandle->password,
             'db' => $database,
         ];
 

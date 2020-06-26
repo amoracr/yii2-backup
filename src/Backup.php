@@ -140,7 +140,7 @@ class Backup extends Component
     {
         $flag = true;
         $dbDump = $this->getDriver($db);
-        $file = $dbDump->dumpDatabase($db);
+        $file = $dbDump->dumpDatabase($db, $this->backupDir);
         if ($file !== false) {
             $flag = $this->addFileToBackup('sql', $file);
             if (true === $flag) {
