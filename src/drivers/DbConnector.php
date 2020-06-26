@@ -17,6 +17,8 @@ abstract class DbConnector extends Component
 
     abstract public function dumpDatabase($db, $path);
 
+    abstract protected function prepareDumpCommand($dbHandle, $templateCommand);
+
     protected function validateDumpCommand()
     {
         if (!is_string($this->dumpCommand)) {
@@ -25,6 +27,15 @@ abstract class DbConnector extends Component
             throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" can not be empty"');
         }
         return true;
+    }
+
+    protected function replaceParams($templateCommand, $params)
+    {
+        $command = $templateCommand;
+        foreach ($params as $key => $value) {
+            $command = str_replace('{' . $key . '}', $value, $command);
+        }
+        return $command;
     }
 
 }
