@@ -11,6 +11,9 @@
         }
     ],
     "require": {
+        "php": ">=5.6.0",
+        "ext-sqlite3": "*",
+        "ext-zip": "*",
         "yiisoft/yii2": "~2.0.0"
     },
     "autoload": {
