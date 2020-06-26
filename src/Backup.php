@@ -7,6 +7,7 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 use \ZipArchive;
 use amoracr\backup\drivers\Mysql;
+use amoracr\backup\drivers\Sqlite;
 
 /**
  * Description of Backup
@@ -129,6 +130,9 @@ class Backup extends Component
         switch ($driver) {
             case 'mysql':
                 $handler = new Mysql();
+                break;
+            case 'sqlite':
+                $handler = new Sqlite();
                 break;
             default :
                 break;
