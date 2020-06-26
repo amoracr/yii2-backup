@@ -2,6 +2,7 @@
 
 namespace amoracr\backup\drivers;
 
+use Yii;
 use amoracr\backup\drivers\DbConnector;
 
 /**
@@ -23,9 +24,9 @@ class Sqlite extends DbConnector
     public function dumpDatabase($db, $path)
     {
         $this->validateDumpCommand();
-        $file = \Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
+        $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
         $dumpCommand = $this->prepareDumpCommand($db, $this->dumpCommand);
-        $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);       
+        $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
 
         if (!file_exists($file)) {
@@ -38,8 +39,8 @@ class Sqlite extends DbConnector
     protected function prepareDumpCommand($dbHandle, $templateCommand)
     {
 
-        $dsn = str_replace('sqlite:', '', \Yii::$app->$dbHandle->dsn);
-        $database = \Yii::getAlias($dsn);
+        $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
+        $database = Yii::getAlias($dsn);
         $params = [
             'db' => $database,
         ];

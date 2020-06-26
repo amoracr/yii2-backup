@@ -2,6 +2,7 @@
 
 namespace amoracr\backup\drivers;
 
+use Yii;
 use amoracr\backup\drivers\DbConnector;
 
 /**
@@ -24,7 +25,7 @@ class Mysql extends DbConnector
     {
         $this->validateDumpCommand();
         $dumpCommand = $this->prepareDumpCommand($db, $this->dumpCommand);
-        $file = \Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
+        $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
         $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
 
@@ -38,11 +39,11 @@ class Mysql extends DbConnector
     protected function prepareDumpCommand($dbHandle, $templateCommand)
     {
         $command = $templateCommand;
-        $database = \Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
+        $database = Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
         $params = [
-            'username' => \Yii::$app->$dbHandle->username,
+            'username' => Yii::$app->$dbHandle->username,
             'host' => 'localhost',
-            'password' => \Yii::$app->$dbHandle->password,
+            'password' => Yii::$app->$dbHandle->password,
             'db' => $database,
         ];
 
