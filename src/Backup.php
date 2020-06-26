@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use \ZipArchive;
+use amoracr\backup\drivers\Mysql;
 
 /**
  * Description of Backup
@@ -121,10 +122,44 @@ class Backup extends Component
         return true;
     }
 
-    private function backupDatabase($dbHandle)
+    private function getDriver($db)
+    {
+        $handler = null;
+        $driver = \Yii::$app->$db->driverName;
+        switch ($driver) {
+            case 'mysql':
+                $handler = new Mysql();
+                break;
+            default :
+                break;
+        }
+        return $handler;
+    }
+
+    private function backupDatabase($db)
     {
         $flag = true;
+        $dbDump = $this->getDriver($db);
+        $file = $dbDump->dumpDatabase($db);
+        if ($file !== false) {
+            $flag = $this->addFileToBackup('sql', $file);
+            if (true === $flag) {
+                @unlink($file);
+            }
+        } else {
+            $flag = false;
+        }
         return $flag;
+    }
+
+    private function addFileToBackup($name, $file)
+    {
+        $relativePath = $name . DIRECTORY_SEPARATOR;
+        $relativePath .= pathinfo($file, PATHINFO_BASENAME);
+        $zipFile = new ZipArchive();
+        $zipFile->open($this->backup, ZipArchive::CREATE);
+        $zipFile->addFile($file, $relativePath);
+        return $zipFile->close();
     }
 
     private function backupFolder($name, $folder)
