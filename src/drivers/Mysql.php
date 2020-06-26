@@ -38,7 +38,7 @@ class Mysql extends DbConnector
     private function prepareDbCommand($dbHandle, $templateCommand)
     {
         $command = $templateCommand;
-        $database = Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
+        $database = \Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
         $params = [
             'username' => Yii::$app->$dbHandle->username,
             'host' => 'localhost',
