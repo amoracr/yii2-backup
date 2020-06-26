@@ -23,7 +23,7 @@ class Mysql extends DbConnector
     public function dumpDatabase($db, $path)
     {
         $this->validateDumpCommand();
-        $dumpCommand = $this->prepareDbCommand($db, $this->dumpCommand);
+        $dumpCommand = $this->prepareDumpCommand($db, $this->dumpCommand);
         $file = \Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
         $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
@@ -35,7 +35,7 @@ class Mysql extends DbConnector
         return $file;
     }
 
-    private function prepareDbCommand($dbHandle, $templateCommand)
+    protected function prepareDumpCommand($dbHandle, $templateCommand)
     {
         $command = $templateCommand;
         $database = \Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
@@ -51,10 +51,7 @@ class Mysql extends DbConnector
             unset($params['password']);
         }
 
-        foreach ($params as $k => $v) {
-            $command = str_replace('{' . $k . '}', $v, $command);
-        }
-        return $command;
+        return $this->replaceParams($command, $params);
     }
 
 }
