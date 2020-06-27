@@ -21,11 +21,11 @@ class Mysql extends DbConnector
         }
     }
 
-    public function dumpDatabase($db, $path)
+    public function dumpDatabase($dbHandle, $path)
     {
         $this->validateDumpCommand();
-        $dumpCommand = $this->prepareDumpCommand($db, $this->dumpCommand);
-        $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $db . '.sql';
+        $dumpCommand = $this->prepareDumpCommand($dbHandle, $this->dumpCommand);
+        $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
         $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
 
