@@ -15,7 +15,7 @@ abstract class DbConnector extends Component
 
     public $dumpCommand;
 
-    abstract public function dumpDatabase($db, $path);
+    abstract public function dumpDatabase($dbHandle, $path);
 
     abstract protected function prepareDumpCommand($dbHandle, $templateCommand);
 
