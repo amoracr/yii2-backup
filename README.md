@@ -1,6 +1,22 @@
 Yii2-backup
 ===========
-Component for creating backups of Yii2 sites.
+Backup and Restore functionality for Yii2 applications.
+
+This extension is based on the extensions [yii2-backup](https://github.com/demisang/yii2-backup) by [Ivan Orlov](https://github.com/demisang), and [yii2-backup](https://github.com/elleracompany/yii2-backup) by [Ellera](https://github.com/elleracompany). I combined those extensions and made a more powerful and easier to use extension.
+
+
+Supported databases:
+- MySQL
+- MariaDB
+- SQLite
+
+Current limitations:
+- Requires a linux system.
+- Currently only MySQL on localhost is supported.
+
+
+Getting started
+------------
 
 Installation
 ------------
@@ -25,7 +41,27 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
-Once the extension is installed, simply use it in your code by  :
+Once the extension is installed, simply add it in your config by  :
 
+Basic ```config/console.php```
+
+Advanced ```console/config/main.php```
 ```php
-<?= \amoracr\backup\AutoloadExample::widget(); ?>```
+'components' => [
+    ...
+    'backup' => [
+            'class' => 'amoracr\yii2-backup\Backup',
+            'fileName' => 'backup', // name for the backup file
+            'backupDir' => '@app/backups', // path for storing the backups
+            'directories' => [
+                'images' => '@frontend/web/images', 
+                'uploads' => '@backend/uploads',
+            ],
+            'skipFiles' => [
+                '.gitignore',
+            ]
+        ],
+]
+```
+
+
