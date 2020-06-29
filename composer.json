@@ -7,13 +7,19 @@
         "backup",
         "dump"
     ],
+    "homepage": "https://github.com/amoracr/yii2-backup",
     "license": "MIT",
     "authors": [
         {
             "name": "Alonso Mora",
-            "email": "adelfunscr@gmail.com"
+            "email": "adelfunscr@gmail.com",
+            "role": "Creator"
         }
     ],
+    "support": {
+        "issues": "https://github.com/amoracr/yii2-backup/issues",
+        "source": "https://github.com/amoracr/yii2-backup"
+    },
     "require": {
         "php": ">=5.6.0",
         "ext-pdo": "*",
