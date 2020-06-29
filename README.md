@@ -1,6 +1,12 @@
 Yii2-backup
 ===========
-Component for creating backups of Yii2 sites.
+Backup component for Yii2 applications.
+
+
+
+> NOTE: This extension is based on the extensions [yii2-backup](https://github.com/demisang/yii2-backup) by [Ivan Orlov](https://github.com/demisang), [yii2-backup](https://github.com/elleracompany/yii2-backup) by [Ellera](https://github.com/elleracompany).
+
+
 
 Installation
 ------------
