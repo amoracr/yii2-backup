@@ -29,7 +29,8 @@
     "suggest": {
         "ext-mysqli": "Need for MySQL, MariaDB databases.",
         "ext-sqlite3": "Need for SQLite databases.",
-        "ext-zip": "Need for creating zip files."
+        "ext-zip": "Need for using zip compression.",
+        "ext-zlib": "Need for using gzip compression."
     },
     "autoload": {
         "psr-4": {
