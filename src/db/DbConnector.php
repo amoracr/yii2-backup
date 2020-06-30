@@ -1,6 +1,6 @@
 <?php
 
-namespace amoracr\backup\drivers;
+namespace amoracr\backup\db;
 
 use yii\base\Component;
 use yii\base\InvalidConfigException;

@@ -6,8 +6,8 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use \ZipArchive;
-use amoracr\backup\drivers\Mysql;
-use amoracr\backup\drivers\Sqlite;
+use amoracr\backup\db\Mysql;
+use amoracr\backup\db\Sqlite;
 
 /**
  * Description of Backup

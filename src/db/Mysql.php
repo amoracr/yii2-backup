@@ -1,9 +1,9 @@
 <?php
 
-namespace amoracr\backup\drivers;
+namespace amoracr\backup\db;
 
 use Yii;
-use amoracr\backup\drivers\DbConnector;
+use amoracr\backup\db\DbConnector;
 
 /**
  * Description of Mysql

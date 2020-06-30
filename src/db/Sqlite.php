@@ -1,10 +1,10 @@
 <?php
 
-namespace amoracr\backup\drivers;
+namespace amoracr\backup\db;
 
 use Yii;
 use \SQLite3;
-use amoracr\backup\drivers\DbConnector;
+use amoracr\backup\db\DbConnector;
 
 /**
  * Description of Sqlite
