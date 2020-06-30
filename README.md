@@ -65,14 +65,16 @@ Minimal Config
             // Directories that will be added to backup
             'directories' => [
                 // format: <inner backup filename> => <path/to/dir>
-                'images' => '@frontend/web/images',
+                'images' => '@app/web/images',
+                'uploads' => '@app/web/uploads',
             ],
         ],
 ]
 ```
 #### Will create backup for:
 **directories:**<br />
-_/frontend/web/images/\*_<br />
+_/web/images/\*_<br />
+_/web/uploads/\*_<br />
 **database:**<br />
 _Yii::$app->db_
 
@@ -108,8 +110,8 @@ Advanced Config
             // Directories that will be added to backup
             'directories' => [
                 // format: <inner backup filename> => <path/to/dir>
-                'images' => '@frontend/web/images',
-                'uploads' => '@frontend/web/uploads',
+                'images' => '@app/web/images',
+                'uploads' => '@app/web/uploads',
             ],
             // Files to avoid in backup accross all directories
             'skipFiles' => [
