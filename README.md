@@ -70,16 +70,16 @@ Minimal Config
         ],
 ]
 ```
-Will create backup for:
-directories:
-/frontend/web/images/*
-database:
-Yii::$app->db
+#### Will create backup for:
+**directories:**<br />
+_/frontend/web/images/\*_<br />
+**database:**<br />
+_Yii::$app->db_
 
-Result:
-/backups/2020-06-29T182436-0600_backup.tar/
->images/
->sql/db.sql
+#### Result:
+**/backups/2020-06-29T182436-0600_backup.tar/**<br />
+\>images/<br />
+\>sql/db.sql
 
 Advanced Config
 ```php
@@ -118,9 +118,9 @@ Advanced Config
         ],
 ]
 ```
-Result:
-/backups/2020-06-29T182436-0600_myapp-backup.zip/
->images/
->uploads/
->sql/db.sql
->sql/db1.sql
+#### Result:
+**/backups/2020-06-29T182436-0600_myapp-backup.zip/**<br />
+\>images/<br />
+\>uploads/<br />
+\>sql/db.sql<br />
+\>sql/db1.sql<br />
