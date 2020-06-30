@@ -22,13 +22,14 @@
     },
     "require": {
         "php": ">=5.6.0",
+        "ext-phar": "*",
         "ext-pdo": "*",
-        "ext-zip": "*",
         "yiisoft/yii2": "~2.0.0"
     },
     "suggest": {
         "ext-mysqli": "Need for MySQL, MariaDB databases.",
-        "ext-sqlite3": "Need for SQLite databases."
+        "ext-sqlite3": "Need for SQLite databases.",
+        "ext-zip": "Need for creating zip files."
     },
     "autoload": {
         "psr-4": {
