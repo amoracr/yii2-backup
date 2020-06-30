@@ -90,6 +90,8 @@ Advanced Config
             'backupDir' => '@app/backups',
             // Database components to backup
             'databases' => ['db', 'db1'],
+            // Compression method to apply to backup file.
+            'compression' => 'zip',
             // Directories that will be added to backup
             'directories' => [
                 // format: <inner backup filename> => <path/to/dir>
@@ -104,7 +106,7 @@ Advanced Config
 ]
 ```
 Result:
-/backups/2020-06-29T182436-0600_myapp-backup.tar/
+/backups/2020-06-29T182436-0600_myapp-backup.zip/
 >images/
 >uploads/
 >sql/db.sql
