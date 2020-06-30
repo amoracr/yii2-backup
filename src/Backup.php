@@ -41,13 +41,14 @@ class Backup extends Component
     public function create()
     {
         $this->validateSettings();
-        $this->initArchive();
+        $this->openArchive();
         foreach ($this->databases as $database) {
             $this->backupDatabase($database);
         }
         foreach ($this->directories as $name => $folder) {
             $this->backupFolder($name, $folder);
         }
+        $this->closeArchive();
         return $this->backup->getBackupFile();
     }
 
@@ -154,7 +155,7 @@ class Backup extends Component
         return $handler;
     }
 
-    private function initArchive()
+    private function openArchive()
     {
         $path = \Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR;
         $name = sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName);
@@ -168,11 +169,16 @@ class Backup extends Component
                 break;
             case 'none':
             case 'tar':
+            default :
                 $this->backup = new Tar($config);
                 break;
-            default :
-                break;
         }
+        $this->backup->open();
+    }
+
+    private function closeArchive()
+    {
+        $this->backup->close();
     }
 
     private function backupDatabase($db)
