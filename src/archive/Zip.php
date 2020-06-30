@@ -3,6 +3,7 @@
 namespace amoracr\backup\archive;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use \ZipArchive;
 use amoracr\backup\archive\Archive;
 
@@ -20,6 +21,9 @@ class Zip extends Archive
         $this->extension = '.zip';
         $this->backup = Yii::getAlias($this->path) . DIRECTORY_SEPARATOR;
         $this->backup .= $this->name . $this->extension;
+        if (!extension_loaded('zip')) {
+            throw new InvalidConfigException('Extension "zip" must be enabled.');
+        }
     }
 
     public function addFileToBackup($name, $file)
