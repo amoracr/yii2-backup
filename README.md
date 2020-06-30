@@ -81,6 +81,7 @@ _Yii::$app->db_
 #### Result:
 **/backups/2020-06-29T182436-0600_backup.tar/**<br />
 \>images/<br />
+\>uploads/<br />
 \>sql/db.sql
 
 Advanced Config
