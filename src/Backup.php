@@ -159,11 +159,10 @@ class Backup extends Component
 
     private function openArchive()
     {
-        $path = \Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR;
-        $name = sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName);
         $config = [
-            'path' => $path,
-            'name' => $name,
+            'path' => Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR,
+            'name' => sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName),
+            'skipFiles' => $this->skipFiles,
         ];
         switch ($this->compression) {
             case 'bzip2':
