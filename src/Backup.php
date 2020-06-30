@@ -5,9 +5,9 @@ namespace amoracr\backup;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
-use \ZipArchive;
 use amoracr\backup\db\Mysql;
 use amoracr\backup\db\Sqlite;
+use amoracr\backup\archive\Tar;
 
 /**
  * Description of Backup
@@ -19,7 +19,7 @@ class Backup extends Component
 
     const EXPIRE_TIME_MIN = 86400;
     const EXPIRE_TIME_MAX = 31536000;
-    const FILE_NAME_FORMAT = '%sT%s_%s.zip';
+    const FILE_NAME_FORMAT = '%sT%s_%s';
 
     public $backupDir = '';
     public $expireTime = 86400;
@@ -27,6 +27,7 @@ class Backup extends Component
     public $skipFiles = [];
     public $databases = ['db'];
     public $fileName = 'backup';
+    public $compression = 'none';
     private $backupTime;
     private $backup;
 
@@ -39,15 +40,14 @@ class Backup extends Component
     public function create()
     {
         $this->validateSettings();
-        $this->backup = \Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR;
-        $this->backup .= sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName);
+        $this->initArchive();
         foreach ($this->databases as $database) {
             $this->backupDatabase($database);
         }
         foreach ($this->directories as $name => $folder) {
             $this->backupFolder($name, $folder);
         }
-        return $this->backup;
+        return $this->backup->getBackupFile();
     }
 
     private function validateSettings()
@@ -58,6 +58,7 @@ class Backup extends Component
         $this->validateSkipFiles();
         $this->validateDatabases();
         $this->validateFileName();
+        $this->validateCompression();
     }
 
     private function validateBackupDir()
@@ -98,7 +99,7 @@ class Backup extends Component
     private function validateSkipFiles()
     {
         if (!is_array($this->skipFiles)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::skipFiles" should be array, "' . gettype($this->directories) . '" given.');
+            throw new InvalidConfigException('"' . get_class($this) . '::skipFiles" should be array, "' . gettype($this->skipFiles) . '" given.');
         }
         return true;
     }
@@ -106,7 +107,7 @@ class Backup extends Component
     private function validateDatabases()
     {
         if (!is_array($this->databases)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->directories) . '" given.');
+            throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
         } else if (empty($this->databases)) {
             throw new InvalidConfigException('"' . get_class($this) . '::databases" can not be empty"');
         }
@@ -116,9 +117,21 @@ class Backup extends Component
     private function validateFileName()
     {
         if (!is_string($this->fileName)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::fileName" should be string, "' . gettype($this->directories) . '" given.');
+            throw new InvalidConfigException('"' . get_class($this) . '::fileName" should be string, "' . gettype($this->fileName) . '" given.');
         } else if (empty($this->fileName)) {
             throw new InvalidConfigException('"' . get_class($this) . '::fileName" can not be empty"');
+        }
+        return true;
+    }
+
+    private function validateCompression()
+    {
+        if (!is_string($this->compression)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::compression" should be string, "' . gettype($this->fileName) . '" given.');
+        } else if (empty($this->compression)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::compression" can not be empty"');
+        } else if (!in_array($this->compression, ['none', 'tar'])) {
+            throw new InvalidConfigException('"' . get_class($this) . '::compression" is not valid option"');
         }
         return true;
     }
@@ -140,6 +153,22 @@ class Backup extends Component
         return $handler;
     }
 
+    private function initArchive()
+    {
+        $path = \Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR;
+        $name = sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName);
+        $config = [
+            'path' => $path,
+            'name' => $name,
+        ];
+        switch ($this->compression) {
+            case 'none':
+            case 'tar':
+                $this->backup = new Tar($config);
+                break;
+        }
+    }
+
     private function backupDatabase($db)
     {
         $flag = true;
@@ -158,31 +187,12 @@ class Backup extends Component
 
     private function addFileToBackup($name, $file)
     {
-        $relativePath = $name . DIRECTORY_SEPARATOR;
-        $relativePath .= pathinfo($file, PATHINFO_BASENAME);
-        $zipFile = new ZipArchive();
-        $zipFile->open($this->backup, ZipArchive::CREATE);
-        $zipFile->addFile($file, $relativePath);
-        return $zipFile->close();
+        return $this->backup->addFileToBackup($name, $file);
     }
 
     private function backupFolder($name, $folder)
     {
-        $zipFile = new ZipArchive();
-        $zipFile->open($this->backup, ZipArchive::CREATE);
-        $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        foreach ($files as $file) {
-            $fileName = $file->getFilename();
-            if (!$file->isDir() && !in_array($fileName, $this->skipFiles)) {
-                $filePath = $file->getRealPath();
-                $relativePath = $name . DIRECTORY_SEPARATOR . substr($filePath, strlen(Yii::getAlias($folder)) + 1);
-                $zipFile->addFile($filePath, $relativePath);
-            }
-        }
-        return $zipFile->close();
+        return $this->backup->addFolderToBackup($name, $folder);
     }
 
 }
