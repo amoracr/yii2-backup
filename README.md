@@ -10,9 +10,16 @@ Supported databases:
 - MariaDB
 - SQLite
 
+Supported comprenssion methods:
+- None
+- Bzip2
+- Gzip
+- Zip
+
 Current limitations:
 - Requires a linux system.
 - Currently only MySQL on localhost is supported.
+- Currently only MariaDB on localhost is supported.
 
 
 Getting started
@@ -84,13 +91,19 @@ Advanced Config
             'fileName' => 'myapp-backup',
             // Maximum age in seconds for a valid backup.
             // Older files are considered deprecated and can be deleted.
-            // Minimum age is 86400 secs (1 day) and maximum age is 31536000 secs (1 year)
+            // Minimum age is 86400 secs (1 day).
+            // Maximum age is 31536000 secs (1 year).
             'expireTime'=> 86400 * 3,
             // Path for storing the backups
             'backupDir' => '@app/backups',
             // Database components to backup
             'databases' => ['db', 'db1'],
             // Compression method to apply to backup file.
+            // Available options:
+            // 'none' or 'tar' for tar files, backup file is not compressed.
+            // 'bzip2' for tar.bz2 files, backup file is compressed with Bzip2 compression.
+            // 'gzip' for tar.gz files, backup file is compressed with Gzip compression.
+            // 'zip' for zip files, backup file is compressed with Zip compression.
             'compression' => 'zip',
             // Directories that will be added to backup
             'directories' => [
