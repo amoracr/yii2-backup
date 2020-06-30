@@ -7,6 +7,7 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 use amoracr\backup\db\Mysql;
 use amoracr\backup\db\Sqlite;
+use amoracr\backup\archive\Gzip;
 use amoracr\backup\archive\Tar;
 use amoracr\backup\archive\Zip;
 
@@ -132,7 +133,7 @@ class Backup extends Component
             throw new InvalidConfigException('"' . get_class($this) . '::compression" should be string, "' . gettype($this->fileName) . '" given.');
         } else if (empty($this->compression)) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" can not be empty"');
-        } else if (!in_array($this->compression, ['none', 'tar', 'zip'])) {
+        } else if (!in_array($this->compression, ['none', 'tar', 'zip', 'gzip'])) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" is not a valid option"');
         }
         return true;
@@ -164,6 +165,9 @@ class Backup extends Component
             'name' => $name,
         ];
         switch ($this->compression) {
+            case 'gzip':
+                $this->backup = new Gzip($config);
+                break;
             case 'zip':
                 $this->backup = new Zip($config);
                 break;
