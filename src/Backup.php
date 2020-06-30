@@ -18,16 +18,16 @@ class Backup extends Component
 {
 
     const EXPIRE_TIME_MIN = 86400;
-    const EXPIRE_TIME_MAX = 2592000;
+    const EXPIRE_TIME_MAX = 31536000;
     const FILE_NAME_FORMAT = '%sT%s_%s.zip';
 
     public $backupDir = '';
-    public $expireTime = 2592000;
+    public $expireTime = 86400;
     public $directories = [];
     public $skipFiles = [];
     public $databases = ['db'];
     public $fileName = 'backup';
-    public $backupTime;
+    private $backupTime;
     private $backup;
 
     public function init()
