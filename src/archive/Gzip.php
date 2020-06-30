@@ -3,6 +3,7 @@
 namespace amoracr\backup\archive;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use \Phar;
 use \PharData;
 use \BadMethodCallException;
@@ -26,6 +27,9 @@ class Gzip extends Archive
         $this->extension = '.tar.gz';
         $this->backup = Yii::getAlias($this->path);
         $this->backup .= $this->name . '.tar';
+        if (!Phar::canCompress(Phar::GZ)) {
+            throw new InvalidConfigException('Extension "zlib" must be enabled.');
+        }
     }
 
     public function addFileToBackup($name, $file)
