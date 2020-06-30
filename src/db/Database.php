@@ -10,7 +10,7 @@ use yii\base\InvalidConfigException;
  *
  * @author alonso
  */
-abstract class DbConnector extends Component
+abstract class Database extends Component
 {
 
     public $dumpCommand;

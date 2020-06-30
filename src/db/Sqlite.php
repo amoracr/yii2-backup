@@ -4,14 +4,14 @@ namespace amoracr\backup\db;
 
 use Yii;
 use \SQLite3;
-use amoracr\backup\db\DbConnector;
+use amoracr\backup\db\Database;
 
 /**
  * Description of Sqlite
  *
  * @author alonso
  */
-class Sqlite extends DbConnector
+class Sqlite extends Database
 {
 
     public function init()

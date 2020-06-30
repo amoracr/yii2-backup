@@ -3,14 +3,14 @@
 namespace amoracr\backup\db;
 
 use Yii;
-use amoracr\backup\db\DbConnector;
+use amoracr\backup\db\Database;
 
 /**
  * Description of Mysql
  *
  * @author alonso
  */
-class Mysql extends DbConnector
+class Mysql extends Database
 {
 
     public function init()
