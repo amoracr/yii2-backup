@@ -18,6 +18,16 @@ abstract class Archive extends Component
     protected $backup;
     protected $extension;
 
+    public function open()
+    {
+
+    }
+
+    public function close()
+    {
+
+    }
+
     abstract public function addFileToBackup($name, $file);
 
     abstract public function addFolderToBackup($name, $folder);
