@@ -26,6 +26,13 @@
         "ext-pdo": "*",
         "yiisoft/yii2": "~2.0.0"
     },
+    "require-dev": {
+        "ext-mysqli": "*",
+        "ext-sqlite3": "*",
+        "ext-bz2": "*",
+        "ext-zip": "*",
+        "ext-zlib": "*"
+    },
     "suggest": {
         "ext-mysqli": "Need for MySQL, MariaDB databases.",
         "ext-sqlite3": "Need for SQLite databases.",
