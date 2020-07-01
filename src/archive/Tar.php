@@ -23,8 +23,7 @@ class Tar extends Archive
     {
         parent::init();
         $this->extension = '.tar';
-        $this->backup = Yii::getAlias($this->path) . DIRECTORY_SEPARATOR;
-        $this->backup .= $this->name . $this->extension;
+        $this->backup = $this->path . $this->name . $this->extension;
     }
 
     public function addFileToBackup($name, $file)

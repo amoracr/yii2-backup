@@ -20,12 +20,12 @@ use amoracr\backup\archive\Archive;
  */
 class Bzip2 extends Archive
 {
-   public function init()
+
+    public function init()
     {
         parent::init();
         $this->extension = '.tar.bz2';
-        $this->backup = Yii::getAlias($this->path);
-        $this->backup .= $this->name . '.tar';
+        $this->backup = $this->path . $this->name . '.tar';
         if (!Phar::canCompress(Phar::BZ2)) {
             throw new InvalidConfigException('Extension "bzip2" must be enabled.');
         }
@@ -100,4 +100,5 @@ class Bzip2 extends Archive
             return false;
         }
     }
+
 }

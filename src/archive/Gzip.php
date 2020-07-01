@@ -25,8 +25,7 @@ class Gzip extends Archive
     {
         parent::init();
         $this->extension = '.tar.gz';
-        $this->backup = Yii::getAlias($this->path);
-        $this->backup .= $this->name . '.tar';
+        $this->backup = $this->path . $this->name . '.tar';
         if (!Phar::canCompress(Phar::GZ)) {
             throw new InvalidConfigException('Extension "zlib" must be enabled.');
         }

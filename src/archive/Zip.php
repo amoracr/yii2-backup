@@ -19,8 +19,7 @@ class Zip extends Archive
     {
         parent::init();
         $this->extension = '.zip';
-        $this->backup = Yii::getAlias($this->path) . DIRECTORY_SEPARATOR;
-        $this->backup .= $this->name . $this->extension;
+        $this->backup = $this->path . $this->name . $this->extension;
         if (!extension_loaded('zip')) {
             throw new InvalidConfigException('Extension "zip" must be enabled.');
         }
