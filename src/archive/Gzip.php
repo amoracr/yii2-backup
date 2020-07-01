@@ -25,7 +25,13 @@ class Gzip extends Archive
     {
         parent::init();
         $this->extension = '.tar.gz';
-        $this->backup = $this->path . $this->name . '.tar';
+
+        if (!empty($this->file)) {
+            $this->backup = $this->file;
+        } else {
+            $this->backup = $this->path . $this->name . '.tar';
+        }
+
         if (!Phar::canCompress(Phar::GZ)) {
             throw new InvalidConfigException('Extension "zlib" must be enabled.');
         }
@@ -99,6 +105,22 @@ class Gzip extends Archive
             Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
             return false;
         }
+    }
+
+    public function extractFileFromBackup($name, $file)
+    {
+        try {
+            $archiveFile = new PharData($this->backup);
+            $content = $archiveFile[$name]->getContent();
+            file_put_contents($file, $content);
+        } catch (UnexpectedValueException $ex) {
+            Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
+        } catch (BadMethodCallException $ex) {
+            Yii::error("Technically, this should not happen. Details: " . $ex->getMessage());
+        } catch (Exception $ex) {
+            Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
+        }
+        return file_exists($file);
     }
 
 }

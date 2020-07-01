@@ -19,7 +19,13 @@ class Zip extends Archive
     {
         parent::init();
         $this->extension = '.zip';
-        $this->backup = $this->path . $this->name . $this->extension;
+
+        if (!empty($this->file)) {
+            $this->backup = $this->file;
+        } else {
+            $this->backup = $this->path . $this->name . $this->extension;
+        }
+
         if (!extension_loaded('zip')) {
             throw new InvalidConfigException('Extension "zip" must be enabled.');
         }
@@ -52,6 +58,27 @@ class Zip extends Archive
             }
         }
         return $zipFile->close();
+    }
+
+    public function extractFileFromBackup($name, $file)
+    {
+        $zipFile = new ZipArchive();
+        $zipFile->open($this->backup);
+        $fpr = $zipFile->getStream($name);
+
+        if (false !== $fpr) {
+            $fpw = fopen($file, 'w');
+
+            while ($data = stream_get_contents($fpr, 1024)) {
+                fwrite($fpw, $data);
+            }
+
+            fclose($fpr);
+            fclose($fpw);
+        }
+
+        $zipFile->close();
+        return file_exists($file);
     }
 
 }

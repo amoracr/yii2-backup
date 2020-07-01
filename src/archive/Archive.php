@@ -14,6 +14,7 @@ abstract class Archive extends Component
 
     public $path;
     public $name;
+    public $file;
     public $skipFiles = [];
     protected $backup;
     protected $extension;
@@ -29,6 +30,8 @@ abstract class Archive extends Component
     }
 
     abstract public function addFileToBackup($name, $file);
+
+    abstract public function extractFileFromBackup($name, $file);
 
     abstract public function addFolderToBackup($name, $folder);
 
