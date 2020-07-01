@@ -45,10 +45,10 @@ or add
 to the require section of your `composer.json` file.
 
 
-Usage
------
+Configuration
+-------------
 
-Once the extension is installed, simply add it in your config file:
+Once the extension is installed, add it in your config file:
 
 Basic ```config/console.php```
 
@@ -127,3 +127,32 @@ Advanced Config
 \>uploads/<br />
 \>sql/db.sql<br />
 \>sql/db1.sql<br />
+
+
+Usage
+-----
+You can use this component in a console command.<br />
+
+**/console/controllers/BackupController.php:/**<br />
+```php
+<?php
+namespace console\controllers;
+
+class BackupController extends \yii\console\Controller
+{
+    public function actionBackup()
+    {
+        $backup = \Yii::$app->backup;
+        $databases = ['db', 'db1', 'db2'];
+        foreach ($databases as $k => $db) {
+            $index = (string)$k;
+            $backup->fileName = 'myapp-part';
+            $backup->fileName .= str_pad($index, 3, '0', STR_PAD_LEFT);
+            $backup->directories = [];
+            $backup->databases = [$db];
+            $file = $backup->create();
+            $this->stdout('Backup file created: ' . $file . PHP_EOL, \yii\helpers\Console::FG_GREEN);
+        }
+    }
+}
+```
