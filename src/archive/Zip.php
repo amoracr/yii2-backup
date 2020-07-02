@@ -4,6 +4,7 @@ namespace amoracr\backup\archive;
 
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\helpers\FileHelper;
 use \ZipArchive;
 use amoracr\backup\archive\Archive;
 
@@ -79,6 +80,36 @@ class Zip extends Archive
 
         $zipFile->close();
         return file_exists($file);
+    }
+
+    public function extractFolderFromBackup($name, $folder)
+    {
+        $zipFile = new ZipArchive();
+        $zipFile->open($this->backup);
+        $targetPath = Yii::getAlias($folder) . DIRECTORY_SEPARATOR;
+        for ($i = 0; $i < $zipFile->numFiles; $i++) {
+            $entryName = $zipFile->getNameIndex($i);
+            if (strpos($entryName, "{$name}/") !== 0) {
+                continue;
+            }
+
+            $file = $targetPath . substr($entryName, strlen($name) + 1);
+            $dir = dirname($file);
+            if (!is_dir($dir)) {
+                FileHelper::createDirectory($dir, 0777, true);
+            }
+
+            $fpr = $zipFile->getStream($entryName);
+            $fpw = fopen($file, 'w');
+
+            while ($data = stream_get_contents($fpr, 1024)) {
+                fwrite($fpw, $data);
+            }
+
+            fclose($fpr);
+            fclose($fpw);
+        }
+        $zipFile->close();
     }
 
 }

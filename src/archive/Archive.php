@@ -35,6 +35,8 @@ abstract class Archive extends Component
 
     abstract public function addFolderToBackup($name, $folder);
 
+    abstract public function extractFolderFromBackup($name, $folder);
+
     public function getBackupFile()
     {
         return $this->backup;
