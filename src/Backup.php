@@ -54,6 +54,30 @@ class Backup extends Component
         return $this->backup->getBackupFile();
     }
 
+    public function restore($file)
+    {
+        $this->validateSettings();
+        $localBackup = Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR . $file;
+        if (file_exists($file)) {
+            $this->backup = $this->getArchive($file);
+        } else if (file_exists($localBackup)) {
+            $this->backup = $this->getArchive($localBackup);
+        } else {
+            return false;
+        }
+
+        foreach ($this->databases as $database) {
+            $this->extractDatabase($database);
+        }
+
+        foreach ($this->directories as $name => $value) {
+            $folder = Yii::getAlias($value);
+            $this->extractFolder($name, $folder);
+        }
+
+        return true;
+    }
+
     private function validateSettings()
     {
         $this->validateBackupDir();
@@ -134,7 +158,7 @@ class Backup extends Component
             throw new InvalidConfigException('"' . get_class($this) . '::compression" should be string, "' . gettype($this->fileName) . '" given.');
         } else if (empty($this->compression)) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" can not be empty"');
-        } else if (!in_array($this->compression, ['none', 'tar', 'zip', 'gzip','bzip2'])) {
+        } else if (!in_array($this->compression, ['none', 'tar', 'zip', 'gzip', 'bzip2'])) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" is not a valid option"');
         }
         return true;
@@ -146,7 +170,10 @@ class Backup extends Component
         $driver = \Yii::$app->$db->driverName;
         switch ($driver) {
             case 'mysql':
-                $handler = new Mysql();
+                $handler = new Mysql([
+                    'dumpCommand' => 'mysqldump --add-drop-table --allow-keywords -q -c -u "{username}" -h "{host}" -p\'{password}\' {db} ',
+                    'loadCommand' => 'mysql -u "{username}" -h "{host}" -p\'{password}\' {db} ',
+                ]);
                 break;
             case 'sqlite':
                 $handler = new Sqlite();
@@ -155,6 +182,31 @@ class Backup extends Component
                 break;
         }
         return $handler;
+    }
+
+    private function getArchive($file)
+    {
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $config = [
+            'file' => $file,
+        ];
+        $archive = null;
+        switch ($extension) {
+            case 'bz2':
+                $archive = new Bzip2($config);
+                break;
+            case 'gz':
+                $archive = new Gzip($config);
+                break;
+            case 'zip':
+                $archive = new Zip($config);
+                break;
+            case 'tar':
+            default :
+                $archive = new Tar($config);
+                break;
+        }
+        return $archive;
     }
 
     private function openArchive()
@@ -212,6 +264,28 @@ class Backup extends Component
     private function backupFolder($name, $folder)
     {
         return $this->backup->addFolderToBackup($name, $folder);
+    }
+
+    private function extractDatabase($db)
+    {
+        $flag = true;
+        $name = 'sql/' . $db . '.sql';
+        $file = Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR . $db . '.sql';
+
+        if ($this->backup->extractFileFromBackup($name, $file)) {
+            $dbDump = $this->getDriver($db);
+            $flag = $dbDump->importDatabase($db, $file);
+            @unlink($file);
+        } else {
+            $flag = false;
+        }
+
+        return $flag;
+    }
+
+    private function extractFolder($name, $folder)
+    {
+        $this->backup->extractFolderFromBackup($name, $folder);
     }
 
 }

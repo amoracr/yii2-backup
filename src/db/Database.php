@@ -14,10 +14,13 @@ abstract class Database extends Component
 {
 
     public $dumpCommand;
+    public $loadCommand;
 
     abstract public function dumpDatabase($dbHandle, $path);
 
-    abstract protected function prepareDumpCommand($dbHandle, $templateCommand);
+    abstract public function importDatabase($dbHandle, $file);
+
+    abstract protected function prepareCommand($dbHandle, $templateCommand);
 
     protected function validateDumpCommand()
     {
@@ -25,6 +28,16 @@ abstract class Database extends Component
             throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" should be string, "' . gettype($this->directories) . '" given.');
         } else if (empty($this->dumpCommand)) {
             throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" can not be empty"');
+        }
+        return true;
+    }
+
+    protected function validateLoadCommand()
+    {
+        if (!is_string($this->loadCommand)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::loadCommand" should be string, "' . gettype($this->directories) . '" given.');
+        } else if (empty($this->loadCommand)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::loadCommand" can not be empty"');
         }
         return true;
     }

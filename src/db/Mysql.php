@@ -13,18 +13,10 @@ use amoracr\backup\db\Database;
 class Mysql extends Database
 {
 
-    public function init()
-    {
-        parent::init();
-        if (is_null($this->dumpCommand) || empty($this->dumpCommand)) {
-            $this->dumpCommand = 'mysqldump --add-drop-table --allow-keywords -q -c -u "{username}" -h "{host}" -p\'{password}\' {db} ';
-        }
-    }
-
     public function dumpDatabase($dbHandle, $path)
     {
         $this->validateDumpCommand();
-        $dumpCommand = $this->prepareDumpCommand($dbHandle, $this->dumpCommand);
+        $dumpCommand = $this->prepareCommand($dbHandle, $this->dumpCommand);
         $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
         $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
         system($command);
@@ -36,7 +28,17 @@ class Mysql extends Database
         return $file;
     }
 
-    protected function prepareDumpCommand($dbHandle, $templateCommand)
+    public function importDatabase($dbHandle, $file)
+    {
+        $this->validateLoadCommand();
+        $importCommand = $this->prepareDbCommand($dbHandle, $this->loadCommand);
+        $command = sprintf("%s < %s  2> /dev/null", $importCommand, $file);
+        system($command);
+
+        return true;
+    }
+
+    protected function prepareCommand($dbHandle, $templateCommand)
     {
         $command = $templateCommand;
         $database = Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();

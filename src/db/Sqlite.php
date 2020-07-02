@@ -3,6 +3,7 @@
 namespace amoracr\backup\db;
 
 use Yii;
+use \PDO;
 use \SQLite3;
 use amoracr\backup\db\Database;
 
@@ -13,11 +14,6 @@ use amoracr\backup\db\Database;
  */
 class Sqlite extends Database
 {
-
-    public function init()
-    {
-        parent::init();
-    }
 
     public function dumpDatabase($dbHandle, $path)
     {
@@ -33,7 +29,30 @@ class Sqlite extends Database
         return $file;
     }
 
-    protected function prepareDumpCommand($dbHandle, $templateCommand)
+    public function importDatabase($dbHandle, $file)
+    {
+        $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
+        $database = Yii::getAlias($dsn);
+        $dsn = 'sqlite:' . $database;
+        $username = Yii::$app->$dbHandle->username;
+        $password = Yii::$app->$dbHandle->password;
+        $db = new PDO($dsn, $username, $password);
+
+        $fp = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $query = '';
+        foreach ($fp as $line) {
+            if ($line != '' && strpos($line, '--') === false) {
+                $query .= $line;
+                if (substr($query, -1) == ';') {
+                    $qr = $db->exec($query);
+                    $query = '';
+                }
+            }
+        }
+        return true;
+    }
+
+    protected function prepareCommand($dbHandle, $templateCommand)
     {
 
     }
