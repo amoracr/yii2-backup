@@ -31,7 +31,7 @@ class Mysql extends Database
     public function importDatabase($dbHandle, $file)
     {
         $this->validateLoadCommand();
-        $importCommand = $this->prepareDbCommand($dbHandle, $this->loadCommand);
+        $importCommand = $this->prepareCommand($dbHandle, $this->loadCommand);
         $command = sprintf("%s < %s  2> /dev/null", $importCommand, $file);
         system($command);
 
