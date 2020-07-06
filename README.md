@@ -2,8 +2,13 @@ Yii2-backup
 ===========
 Backup and Restore functionality for Yii2 applications.
 
-This extension is based on the extensions [yii2-backup](https://github.com/demisang/yii2-backup) by [Ivan Orlov](https://github.com/demisang), and [yii2-backup](https://github.com/elleracompany/yii2-backup) by [Ellera](https://github.com/elleracompany). I combined those extensions and made a more powerful and easier to use extension.
+This extension is based on:
+- [yii2-backup](https://github.com/demisang/yii2-backup) by [Ivan Orlov](https://github.com/demisang),
+- [yii2-backup](https://github.com/elleracompany/yii2-backup) by [Ellera](https://github.com/elleracompany).
+- [php-sqlite-dump](https://github.com/ephestione/php-sqlite-dump)
+- [loading-sql-files-from-within-php](https://stackoverflow.com/questions/147821/loading-sql-files-from-within-php)
 
+I combined those sources and made a more powerful and easier to use extension.
 
 Supported databases:
 - MySQL
