@@ -74,10 +74,10 @@ class Backup extends Component
     public $compression = 'none';
 
     /** @var int Timestamp of the backup. */
-    private $backupTime;
+    private $_backupTime;
 
     /** @var Archive Instance of archive class to handle the backup file. */
-    private $backup;
+    private $_backup;
 
     /**
      * @inheritdoc
@@ -85,7 +85,7 @@ class Backup extends Component
     public function init()
     {
         parent::init();
-        $this->backupTime = time();
+        $this->_backupTime = time();
     }
 
     /**
@@ -106,7 +106,7 @@ class Backup extends Component
             $this->backupFolder($name, $folder);
         }
         $this->closeArchive();
-        return $this->backup->getBackupFile();
+        return $this->_backup->getBackupFile();
     }
 
     /**
@@ -122,9 +122,9 @@ class Backup extends Component
         $this->validateSettings();
         $localBackup = Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR . $file;
         if (file_exists($file)) {
-            $this->backup = $this->getArchive($file);
+            $this->_backup = $this->getArchive($file);
         } else if (file_exists($localBackup)) {
-            $this->backup = $this->getArchive($localBackup);
+            $this->_backup = $this->getArchive($localBackup);
         } else {
             return false;
         }
@@ -339,26 +339,26 @@ class Backup extends Component
     {
         $config = [
             'path' => Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR,
-            'name' => sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->backupTime), date('HisO', $this->backupTime), $this->fileName),
+            'name' => sprintf(self::FILE_NAME_FORMAT, date('Y-m-d', $this->_backupTime), date('HisO', $this->_backupTime), $this->fileName),
             'skipFiles' => $this->skipFiles,
         ];
         switch ($this->compression) {
             case 'bzip2':
-                $this->backup = new Bzip2($config);
+                $this->_backup = new Bzip2($config);
                 break;
             case 'gzip':
-                $this->backup = new Gzip($config);
+                $this->_backup = new Gzip($config);
                 break;
             case 'zip':
-                $this->backup = new Zip($config);
+                $this->_backup = new Zip($config);
                 break;
             case 'none':
             case 'tar':
             default :
-                $this->backup = new Tar($config);
+                $this->_backup = new Tar($config);
                 break;
         }
-        $this->backup->open();
+        $this->_backup->open();
     }
 
     /**
@@ -366,7 +366,7 @@ class Backup extends Component
      */
     private function closeArchive()
     {
-        $this->backup->close();
+        $this->_backup->close();
     }
 
     /**
@@ -400,7 +400,7 @@ class Backup extends Component
      */
     private function addFileToBackup($name, $file)
     {
-        return $this->backup->addFileToBackup($name, $file);
+        return $this->_backup->addFileToBackup($name, $file);
     }
 
     /**
@@ -412,7 +412,7 @@ class Backup extends Component
      */
     private function backupFolder($name, $folder)
     {
-        return $this->backup->addFolderToBackup($name, $folder);
+        return $this->_backup->addFolderToBackup($name, $folder);
     }
 
     /**
@@ -429,7 +429,7 @@ class Backup extends Component
         $name = 'sql/' . $db . '.sql';
         $file = Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR . $db . '.sql';
 
-        if ($this->backup->extractFileFromBackup($name, $file)) {
+        if ($this->_backup->extractFileFromBackup($name, $file)) {
             $dbDump = $this->getDriver($db);
             $flag = $dbDump->importDatabase($db, $file);
             @unlink($file);
@@ -448,7 +448,7 @@ class Backup extends Component
      */
     private function extractFolder($name, $folder)
     {
-        $this->backup->extractFolderFromBackup($name, $folder);
+        $this->_backup->extractFolderFromBackup($name, $folder);
     }
 
 }
