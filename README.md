@@ -5,7 +5,7 @@ Backup and Restore functionality for Yii2 applications.
 This extension is based on:
 - [yii2-backup](https://github.com/demisang/yii2-backup) by [Ivan Orlov](https://github.com/demisang),
 - [yii2-backup](https://github.com/elleracompany/yii2-backup) by [Ellera](https://github.com/elleracompany).
-- [php-sqlite-dump](https://github.com/ephestione/php-sqlite-dump)
+- [php-sqlite-dump](https://github.com/ephestione/php-sqlite-dump) by [ephestione](https://github.com/ephestione)
 - [extract-folder-content-using-ziparchive](https://stackoverflow.com/questions/8102379/extract-folder-content-using-ziparchive)
 - [loading-sql-files-from-within-php](https://stackoverflow.com/questions/147821/loading-sql-files-from-within-php)
 
