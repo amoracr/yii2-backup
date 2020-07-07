@@ -12,6 +12,7 @@ namespace amoracr\backup;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
+use yii\helpers\FileHelper;
 use amoracr\backup\db\Mysql;
 use amoracr\backup\db\Sqlite;
 use amoracr\backup\archive\Bzip2;
@@ -139,6 +140,29 @@ class Backup extends Component
         }
 
         return true;
+    }
+
+    /**
+     * 
+     * @return type
+     */
+    public function deleteDeprecated()
+    {
+        $this->validateSettings();
+        $deletedFiles = [];
+        $expiredFiles = $this->getExpiredFiles();
+        foreach ($expiredFiles as $file) {
+            if (@unlink($file)) {
+                array_push($deletedFiles, $file);
+            } else {
+                Yii::error('Cannot delete backup file: ' . $file);
+            }
+        }
+
+        return [
+            'expiredFiles' => count($expiredFiles),
+            'deletedFiles' => count($deletedFiles),
+        ];
     }
 
     /**
@@ -449,6 +473,28 @@ class Backup extends Component
     private function extractFolder($name, $folder)
     {
         $this->_backup->extractFolderFromBackup($name, $folder);
+    }
+
+    private function getExpiredFiles()
+    {
+        $backupsFolder = \Yii::getAlias($this->backupDir);
+        $expireTimestamp = time() - $this->expireTime;
+        $extensions = ['tar', 'bz2', 'gzip', 'zip'];
+        
+        $filter = function ($path) use ($expireTimestamp, $extensions) {
+            $isFile = is_file($path);
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            $lastUpdateTime = filemtime($path);
+
+            if ($isFile && in_array($extension, $extensions) && $lastUpdateTime <= $expireTimestamp) {
+                return true;
+            }
+
+            return false;
+        };
+
+        $files = FileHelper::findFiles($backupsFolder, ['recursive' => false, 'filter' => $filter]);
+        return $files;
     }
 
 }
