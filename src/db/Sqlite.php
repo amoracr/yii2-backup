@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @copyright Copyright (c) 2020 Alonso Mora
+ * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
+ * @link      https://github.com/amoracr/yii2-backup#readme
+ * @author    Alonso Mora <adelfunscr@gmail.com>
+ */
+
 namespace amoracr\backup\db;
 
 use Yii;
@@ -8,13 +15,17 @@ use \SQLite3;
 use amoracr\backup\db\Database;
 
 /**
- * Description of Sqlite
+ * Component for dumping and restoring database data for SQLite databases
  *
- * @author alonso
+ * @author Alonso Mora <adelfunscr@gmail.com>
+ * @since 1.0
  */
 class Sqlite extends Database
 {
 
+    /**
+     * @inheritdoc
+     */
     public function dumpDatabase($dbHandle, $path)
     {
         $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
@@ -29,6 +40,9 @@ class Sqlite extends Database
         return $file;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function importDatabase($dbHandle, $file)
     {
         $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
@@ -52,11 +66,21 @@ class Sqlite extends Database
         return true;
     }
 
+    /**
+     * @inheritdoc
+     * Does nothing for this driver
+     */
     protected function prepareCommand($dbHandle, $templateCommand)
     {
 
     }
 
+    /**
+     * Creates a dump file for an SQLite3 database
+     *
+     * @param string $dbFile Full path of the database file
+     * @param string $file Full path of the dump file
+     */
     private function dump($dbFile, $file)
     {
         $db = new SQLite3($dbFile, SQLITE3_OPEN_READONLY);
@@ -85,12 +109,25 @@ class Sqlite extends Database
         $this->saveToFile("COMMIT;", $file);
     }
 
+    /**
+     * Adds content to dump file
+     *
+     * @param string $text Content to save
+     * @param string $file Full path of dump file
+     */
     private function saveToFile($text, $file)
     {
         $content = $text . "\n";
         file_put_contents($file, $content, FILE_APPEND);
     }
 
+    /**
+     * Dumps data of a database table in a file
+     *
+     * @param SQLite3 $db Database reference
+     * @param string $table Name of table
+     * @param string $file Full path of dump file
+     */
     private function dumpTable(&$db, $table, $file)
     {
         $sql = $db->querySingle("SELECT sql FROM sqlite_master WHERE name = '$table'") . ";";
@@ -109,6 +146,13 @@ class Sqlite extends Database
         }
     }
 
+    /**
+     * Gets the column names of a database table
+     *
+     * @param SQLite3 $db Database reference
+     * @param string $table Name of table
+     * @return string Column names separated by a comma
+     */
     private function getTableColumns(&$db, $table)
     {
         $fieldnames = [];
@@ -121,6 +165,12 @@ class Sqlite extends Database
         return $fields;
     }
 
+    /**
+     * Gets the column values of a row
+     *
+     * @param array $row Result set of a query
+     * @return Column values separated by a comma
+     */
     private function getRowValues(&$row)
     {
         foreach ($row as $k => $v) {

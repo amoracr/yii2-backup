@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @copyright Copyright (c) 2020 Alonso Mora
+ * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
+ * @link      https://github.com/amoracr/yii2-backup#readme
+ * @author    Alonso Mora <adelfunscr@gmail.com>
+ */
+
 namespace amoracr\backup\archive;
 
 use Yii;
@@ -12,13 +19,18 @@ use \UnexpectedValueException;
 use amoracr\backup\archive\Tar as TarArchive;
 
 /**
- * Description of Gzip
+ * Component for packing and extracting files and directories using Gzip compression.
  *
- * @author alonso
+ * @author Alonso Mora <adelfunscr@gmail.com>
+ * @since 1.0
  */
 class Gzip extends TarArchive
 {
 
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException if extension "zlib"  is not enabled
+     */
     public function init()
     {
         parent::init();
@@ -35,6 +47,11 @@ class Gzip extends TarArchive
         }
     }
 
+    /**
+     * Closes backup file and tries to compress it
+     *
+     * @return boolean True if backup file was closed and compressed, false otherwise
+     */
     public function close()
     {
         try {

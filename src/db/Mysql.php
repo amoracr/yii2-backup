@@ -1,18 +1,30 @@
 <?php
 
+/**
+ * @copyright Copyright (c) 2020 Alonso Mora
+ * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
+ * @link      https://github.com/amoracr/yii2-backup#readme
+ * @author    Alonso Mora <adelfunscr@gmail.com>
+ */
+
 namespace amoracr\backup\db;
 
 use Yii;
 use amoracr\backup\db\Database;
 
 /**
- * Description of Mysql
+ * Component for dumping and restoring database data for MySql databases
  *
- * @author alonso
+ * @author Alonso Mora <adelfunscr@gmail.com>
+ * @since 1.0
  */
 class Mysql extends Database
 {
 
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException if configuration is not valid
+     */
     public function dumpDatabase($dbHandle, $path)
     {
         $this->validateDumpCommand();
@@ -28,6 +40,10 @@ class Mysql extends Database
         return $file;
     }
 
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException if configuration is not valid
+     */
     public function importDatabase($dbHandle, $file)
     {
         $this->validateLoadCommand();
@@ -38,6 +54,9 @@ class Mysql extends Database
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function prepareCommand($dbHandle, $templateCommand)
     {
         $command = $templateCommand;

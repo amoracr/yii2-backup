@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @copyright Copyright (c) 2020 Alonso Mora
+ * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
+ * @link      https://github.com/amoracr/yii2-backup#readme
+ * @author    Alonso Mora <adelfunscr@gmail.com>
+ */
+
 namespace amoracr\backup\archive;
 
 use Yii;
@@ -12,13 +19,17 @@ use \RecursiveDirectoryIterator;
 use amoracr\backup\archive\Archive;
 
 /**
- * Description of Tar
+ * Component for packing and extracting files and directories using tar packing.
  *
- * @author alonso
+ * @author Alonso Mora <adelfunscr@gmail.com>
+ * @since 1.0
  */
 class Tar extends Archive
 {
 
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         parent::init();
@@ -31,6 +42,10 @@ class Tar extends Archive
         }
     }
 
+    /**
+     * @inheritdoc
+     * @return boolean True if file was appended, false otherwise
+     */
     public function addFileToBackup($name, $file)
     {
         try {
@@ -51,6 +66,10 @@ class Tar extends Archive
         return true;
     }
 
+    /**
+     * @inheritdoc
+     * @return boolean True if directory was appended, false otherwise
+     */
     public function addFolderToBackup($name, $folder)
     {
         try {
@@ -80,6 +99,10 @@ class Tar extends Archive
         return true;
     }
 
+    /**
+     * @inheritdoc
+     * @return boolean True if file was extracted, false otherwise
+     */
     public function extractFileFromBackup($name, $file)
     {
         try {
@@ -96,6 +119,10 @@ class Tar extends Archive
         return file_exists($file);
     }
 
+    /**
+     * @inheritdoc
+     * @return boolean True if directory was extracted, false otherwise
+     */
     public function extractFolderFromBackup($name, $folder)
     {
         try {

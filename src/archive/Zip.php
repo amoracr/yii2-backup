@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @copyright Copyright (c) 2020 Alonso Mora
+ * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
+ * @link      https://github.com/amoracr/yii2-backup#readme
+ * @author    Alonso Mora <adelfunscr@gmail.com>
+ */
+
 namespace amoracr\backup\archive;
 
 use Yii;
@@ -9,13 +16,18 @@ use \ZipArchive;
 use amoracr\backup\archive\Archive;
 
 /**
- * Description of Zip
+ * Component for packing and extracting files and directories using zip compression.
  *
- * @author alonso
+ * @author Alonso Mora <adelfunscr@gmail.com>
+ * @since 1.0
  */
 class Zip extends Archive
 {
 
+    /**
+     * @inheritdoc
+     * @throws InvalidConfigException if extension "zip"  is not enabled
+     */
     public function init()
     {
         parent::init();
@@ -32,6 +44,9 @@ class Zip extends Archive
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function addFileToBackup($name, $file)
     {
         $relativePath = $name . DIRECTORY_SEPARATOR;
@@ -42,6 +57,9 @@ class Zip extends Archive
         return $zipFile->close();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function addFolderToBackup($name, $folder)
     {
         $zipFile = new ZipArchive();
@@ -61,6 +79,9 @@ class Zip extends Archive
         return $zipFile->close();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function extractFileFromBackup($name, $file)
     {
         $zipFile = new ZipArchive();
@@ -82,6 +103,9 @@ class Zip extends Archive
         return file_exists($file);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function extractFolderFromBackup($name, $folder)
     {
         $zipFile = new ZipArchive();
