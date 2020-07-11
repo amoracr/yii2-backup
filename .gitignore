@@ -9,6 +9,9 @@ nbproject
 .project
 .settings
 
+# visual studio code project files
+.vscode
+
 # windows thumbnail cache
 Thumbs.db
 
