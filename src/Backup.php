@@ -143,8 +143,9 @@ class Backup extends Component
     }
 
     /**
+     * Deletes backup files that are too old and returns number of obsolete and deleted files
      *
-     * @return type
+     * @return array Number of expired and deleted backup files
      */
     public function deleteDeprecated()
     {
