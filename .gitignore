@@ -11,6 +11,7 @@ nbproject
 
 ### VisualStudioCode ###
 .vscode
+*.code-workspace
 
 ### SublimeText ###
 *.tmlanguage.cache
@@ -25,5 +26,5 @@ Thumbs.db
 # Mac DS_Store Files
 .DS_Store
 
-# composer itself is not needed
+# Composer
 composer.phar
