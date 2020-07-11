@@ -9,14 +9,14 @@
 
 namespace amoracr\backup\archive;
 
+use amoracr\backup\archive\Tar as TarArchive;
 use Yii;
 use yii\base\InvalidConfigException;
-use \Phar;
-use \PharData;
 use \BadMethodCallException;
 use \Exception;
+use \Phar;
+use \PharData;
 use \UnexpectedValueException;
-use amoracr\backup\archive\Tar as TarArchive;
 
 /**
  * Component for packing and extracting files and directories using Gzip compression.

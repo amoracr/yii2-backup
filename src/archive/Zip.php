@@ -9,11 +9,11 @@
 
 namespace amoracr\backup\archive;
 
+use amoracr\backup\archive\Archive;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use \ZipArchive;
-use amoracr\backup\archive\Archive;
 
 /**
  * Component for packing and extracting files and directories using zip compression.
@@ -65,7 +65,7 @@ class Zip extends Archive
         $zipFile = new ZipArchive();
         $zipFile->open($this->backup, ZipArchive::CREATE);
         $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
+            new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
         );
 
         foreach ($files as $file) {

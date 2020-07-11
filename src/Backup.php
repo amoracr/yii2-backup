@@ -9,16 +9,16 @@
 
 namespace amoracr\backup;
 
-use Yii;
-use yii\base\Component;
-use yii\base\InvalidConfigException;
-use yii\helpers\FileHelper;
-use amoracr\backup\db\Mysql;
-use amoracr\backup\db\Sqlite;
 use amoracr\backup\archive\Bzip2;
 use amoracr\backup\archive\Gzip;
 use amoracr\backup\archive\Tar;
 use amoracr\backup\archive\Zip;
+use amoracr\backup\db\Mysql;
+use amoracr\backup\db\Sqlite;
+use Yii;
+use yii\base\Component;
+use yii\base\InvalidConfigException;
+use yii\helpers\FileHelper;
 
 /**
  * Backup component
@@ -143,7 +143,7 @@ class Backup extends Component
     }
 
     /**
-     * 
+     *
      * @return type
      */
     public function deleteDeprecated()
@@ -318,7 +318,7 @@ class Backup extends Component
             case 'sqlite':
                 $handler = new Sqlite();
                 break;
-            default :
+            default:
                 break;
         }
         return $handler;
@@ -348,7 +348,7 @@ class Backup extends Component
                 $archive = new Zip($config);
                 break;
             case 'tar':
-            default :
+            default:
                 $archive = new Tar($config);
                 break;
         }
@@ -378,7 +378,7 @@ class Backup extends Component
                 break;
             case 'none':
             case 'tar':
-            default :
+            default:
                 $this->_backup = new Tar($config);
                 break;
         }
@@ -475,12 +475,17 @@ class Backup extends Component
         $this->_backup->extractFolderFromBackup($name, $folder);
     }
 
+    /**
+     * Gets the list of expired/deprecated files in backup directory
+     *
+     * @return array List of expired/deprecated files in backup directory
+     */
     private function getExpiredFiles()
     {
         $backupsFolder = \Yii::getAlias($this->backupDir);
         $expireTimestamp = time() - $this->expireTime;
         $extensions = ['tar', 'bz2', 'gzip', 'zip'];
-        
+
         $filter = function ($path) use ($expireTimestamp, $extensions) {
             $isFile = is_file($path);
             $extension = pathinfo($path, PATHINFO_EXTENSION);
@@ -493,7 +498,10 @@ class Backup extends Component
             return false;
         };
 
-        $files = FileHelper::findFiles($backupsFolder, ['recursive' => false, 'filter' => $filter]);
+        $files = FileHelper::findFiles($backupsFolder, [
+            'recursive' => false,
+            'filter' => $filter,
+        ]);
         return $files;
     }
 

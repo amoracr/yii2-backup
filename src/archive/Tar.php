@@ -9,14 +9,14 @@
 
 namespace amoracr\backup\archive;
 
+use amoracr\backup\archive\Archive;
 use Yii;
-use \PharData;
 use \BadMethodCallException;
 use \Exception;
-use \UnexpectedValueException;
-use \RecursiveIteratorIterator;
+use \PharData;
 use \RecursiveDirectoryIterator;
-use amoracr\backup\archive\Archive;
+use \RecursiveIteratorIterator;
+use \UnexpectedValueException;
 
 /**
  * Component for packing and extracting files and directories using tar packing.
@@ -75,7 +75,7 @@ class Tar extends Archive
         try {
             $archiveFile = new PharData($this->backup);
             $files = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator(Yii::getAlias($folder)), RecursiveIteratorIterator::LEAVES_ONLY
+                new RecursiveDirectoryIterator(Yii::getAlias($folder)), RecursiveIteratorIterator::LEAVES_ONLY
             );
 
             foreach ($files as $file) {

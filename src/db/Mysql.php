@@ -9,8 +9,8 @@
 
 namespace amoracr\backup\db;
 
-use Yii;
 use amoracr\backup\db\Database;
+use Yii;
 
 /**
  * Component for dumping and restoring database data for MySql databases

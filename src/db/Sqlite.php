@@ -9,10 +9,10 @@
 
 namespace amoracr\backup\db;
 
+use amoracr\backup\db\Database;
 use Yii;
 use \PDO;
 use \SQLite3;
-use amoracr\backup\db\Database;
 
 /**
  * Component for dumping and restoring database data for SQLite databases
