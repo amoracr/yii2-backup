@@ -1,16 +1,23 @@
-# phpstorm project files
+### PhpStorm ###
 .idea
 
-# netbeans project files
+### NetBeans ###
 nbproject
 
-# zend studio for eclipse project files
+### Eclipse ###
 .buildpath
 .project
 .settings
 
-# visual studio code project files
+### VisualStudioCode ###
 .vscode
+
+### SublimeText ###
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
 
 # windows thumbnail cache
 Thumbs.db
