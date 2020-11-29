@@ -190,10 +190,13 @@ class Backup extends Component
      */
     private function validateBackupDir()
     {
-        $backupDir = Yii::getAlias($this->backupDir);
-        if (empty($this->backupDir)) {
+        if (!is_string($this->backupDir)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::backupDir" should be string, "' . gettype($this->backupDir) . '" given.');
+        } else if (empty($this->backupDir)) {
             throw new InvalidConfigException('"' . get_class($this) . '::backupDir" can not be empty"');
         }
+
+        $backupDir = Yii::getAlias($this->backupDir);
         if (!file_exists($backupDir)) {
             throw new InvalidConfigException('"' . $this->backupDir . '" does not exists"');
         }
@@ -500,8 +503,8 @@ class Backup extends Component
         };
 
         $files = FileHelper::findFiles($backupsFolder, [
-            'recursive' => false,
-            'filter' => $filter,
+                    'recursive' => false,
+                    'filter' => $filter,
         ]);
         return $files;
     }
