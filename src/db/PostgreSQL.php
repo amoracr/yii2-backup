@@ -44,7 +44,7 @@ class PostgreSQL extends Database
         $this->validateDumpCommand();
         $dumpCommand = $this->prepareCommand($dbHandle, $this->dumpCommand);
         $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
-        $command = sprintf("%s > %s  2> /dev/null", $dumpCommand, $file);
+        $command = sprintf("%s > %s 2> /dev/null", $dumpCommand, $file);
         system($command);
 
         if (!file_exists($file)) {
