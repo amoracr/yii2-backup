@@ -15,6 +15,7 @@ use amoracr\backup\archive\Tar;
 use amoracr\backup\archive\Zip;
 use amoracr\backup\db\Mysql;
 use amoracr\backup\db\Sqlite;
+use amoracr\backup\db\PostgreSQL;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -318,6 +319,9 @@ class Backup extends Component
                 break;
             case 'sqlite':
                 $handler = new Sqlite();
+                break;
+            case 'pgsql':
+                $handler = new PostgreSQL();
                 break;
             default:
                 break;
