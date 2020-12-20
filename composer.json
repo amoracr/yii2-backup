@@ -29,6 +29,7 @@
     "require-dev": {
         "ext-mysqli": "*",
         "ext-sqlite3": "*",
+        "ext-pgsql": "*",
         "ext-bz2": "*",
         "ext-zip": "*",
         "ext-zlib": "*"
@@ -36,6 +37,7 @@
     "suggest": {
         "ext-mysqli": "Need for MySQL, MariaDB databases.",
         "ext-sqlite3": "Need for SQLite databases.",
+        "ext-pgsql": "Need for PostgreSQL databases.",
         "ext-bz2": "Need for Bzip2 compression.",
         "ext-zip": "Need for Zip compression.",
         "ext-zlib": "Need for Gzip compression."
