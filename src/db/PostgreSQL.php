@@ -31,7 +31,7 @@ class PostgreSQL extends Database
             $this->dumpCommand = 'pg_dump --no-owner --dbname=postgresql://{username}:{password}@{host}:{port}/{db}';
         }
         if (empty($this->loadCommand)) {
-            $this->loadCommand = '';
+            $this->loadCommand = 'psql --dbname=postgresql://{username}:{password}@{host}:{port}/{db}';
         }
     }
 
@@ -60,7 +60,12 @@ class PostgreSQL extends Database
      */
     public function importDatabase($dbHandle, $file)
     {
-        
+        $this->validateLoadCommand();
+        $importCommand = $this->prepareCommand($dbHandle, $this->loadCommand);
+        $command = sprintf("%s --file=%s > /dev/null", $importCommand, $file);
+        system($command);
+
+        return true;
     }
 
     /**
