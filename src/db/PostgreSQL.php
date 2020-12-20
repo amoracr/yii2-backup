@@ -74,11 +74,12 @@ class PostgreSQL extends Database
         $database = '';
         $port = '';
         foreach ($dbParams as $param) {
-            if (stripos('port', $param) !== false) {
-                list($tmp, $port) = explode('=', $param);
+            list($paramName, $paramvalue) = explode('=', $param);
+            if ('dbname' === $paramName) {
+                $database = $paramvalue;
             }
-            if (stripos('dbname', $param) !== false) {
-                list($tmp, $database) = explode('=', $param);
+            if ('port' === $paramName) {
+                $port = $paramvalue;
             }
         }
 
