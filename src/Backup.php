@@ -314,10 +314,7 @@ class Backup extends Component
         $driver = \Yii::$app->$db->driverName;
         switch ($driver) {
             case 'mysql':
-                $handler = new Mysql([
-                    'dumpCommand' => 'mysqldump --add-drop-table --allow-keywords -q -c -u "{username}" -h "{host}" -p\'{password}\' {db} ',
-                    'loadCommand' => 'mysql -u "{username}" -h "{host}" -p\'{password}\' {db} ',
-                ]);
+                $handler = new Mysql();
                 break;
             case 'sqlite':
                 $handler = new Sqlite();

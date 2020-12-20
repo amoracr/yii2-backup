@@ -23,6 +23,20 @@ class Mysql extends Database
 
     /**
      * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        if (empty($this->dumpCommand)) {
+            $this->dumpCommand = 'mysqldump --add-drop-table --allow-keywords -q -c -u "{username}" -h "{host}" -p\'{password}\' {db} ';
+        }
+        if (empty($this->loadCommand)) {
+            $this->loadCommand = 'mysql -u "{username}" -h "{host}" -p\'{password}\' {db} ';
+        }
+    }
+
+    /**
+     * @inheritdoc
      * @throws InvalidConfigException if configuration is not valid
      */
     public function dumpDatabase($dbHandle, $path)
