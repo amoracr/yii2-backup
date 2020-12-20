@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Support for PostgreSQL databases.
+
+### Changed
+- Configuration of commands for MySQL databases.
 
 ## [1.0.2] 2020-11-30
 ### Added
