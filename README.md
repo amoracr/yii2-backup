@@ -15,6 +15,7 @@ Supported databases:
 - MySQL
 - MariaDB
 - SQLite
+- PostgreSQL
 
 Supported compression methods:
 - Bzip2
@@ -27,6 +28,7 @@ Current limitations:
 - Requires a linux system.
 - Currently only MySQL on localhost is supported.
 - Currently only MariaDB on localhost is supported.
+- Currently only PostgreSQL on localhost is supported.
 
 
 Getting started
