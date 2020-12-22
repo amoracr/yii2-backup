@@ -75,6 +75,21 @@ class Backup extends Component
      */
     public $compression = 'none';
 
+    /** @var mixed The MySQL handler type and configuration. */
+    public $mysqlHandler = [
+        'class' => Mysql::class
+    ];
+    
+    /** @var mixed The SQLite handler type and configuration. */
+    public $sqliteHandler = [
+        'class' => Sqlite::class
+    ];
+
+    /** @var mixed The PostgreSQL handler type and configuration. */
+    public $postgreHandler = [
+        'class' => PostgreSQL::class
+    ];
+
     /** @var int Timestamp of the backup. */
     private $_backupTime;
 
@@ -172,7 +187,7 @@ class Backup extends Component
      *
      * @throws InvalidConfigException
      */
-    private function validateSettings()
+    protected function validateSettings()
     {
         $this->validateBackupDir();
         $this->validateExpireTime();
@@ -189,7 +204,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateBackupDir()
+    protected function validateBackupDir()
     {
         if (!is_string($this->backupDir)) {
             throw new InvalidConfigException('"' . get_class($this) . '::backupDir" should be string, "' . gettype($this->backupDir) . '" given.');
@@ -213,7 +228,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateExpireTime()
+    protected function validateExpireTime()
     {
         if (!is_int($this->expireTime)) {
             throw new InvalidConfigException('"' . get_class($this) . '::expireTime" should be integer, "' . gettype($this->expireTime) . '" given.');
@@ -231,7 +246,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateFiles()
+    protected function validateFiles()
     {
         if (!is_array($this->directories)) {
             throw new InvalidConfigException('"' . get_class($this) . '::directories" should be array, "' . gettype($this->directories) . '" given.');
@@ -245,7 +260,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateSkipFiles()
+    protected function validateSkipFiles()
     {
         if (!is_array($this->skipFiles)) {
             throw new InvalidConfigException('"' . get_class($this) . '::skipFiles" should be array, "' . gettype($this->skipFiles) . '" given.');
@@ -259,7 +274,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateDatabases()
+    protected function validateDatabases()
     {
         if (!is_array($this->databases)) {
             throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
@@ -275,7 +290,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateFileName()
+    protected function validateFileName()
     {
         if (!is_string($this->fileName)) {
             throw new InvalidConfigException('"' . get_class($this) . '::fileName" should be string, "' . gettype($this->fileName) . '" given.');
@@ -291,7 +306,7 @@ class Backup extends Component
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
      */
-    private function validateCompression()
+    protected function validateCompression()
     {
         if (!is_string($this->compression)) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" should be string, "' . gettype($this->fileName) . '" given.');
@@ -309,19 +324,19 @@ class Backup extends Component
      * @param string $db Name of database connection
      * @return Database|null Database instance if driver is supported, null otherwise
      */
-    private function getDriver($db)
+    protected function getDriver($db)
     {
         $handler = null;
         $driver = \Yii::$app->$db->driverName;
         switch ($driver) {
             case 'mysql':
-                $handler = new Mysql();
+                $handler = \Yii::createObject($this->mysqlHandler);
                 break;
             case 'sqlite':
-                $handler = new Sqlite();
+                $handler = \Yii::createObject($this->sqliteHandler);
                 break;
             case 'pgsql':
-                $handler = new PostgreSQL();
+                $handler = \Yii::createObject($this->postgreHandler);
                 break;
             default:
                 break;
@@ -335,7 +350,7 @@ class Backup extends Component
      * @param string $file Full path to backup file
      * @return Archive Instance to handle the backup file
      */
-    private function getArchive($file)
+    protected function getArchive($file)
     {
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         $config = [
@@ -364,7 +379,7 @@ class Backup extends Component
      * Inits the backup instance and creates the backup file.
      * It sets the path, name and list of ignored files of the archive instance.
      */
-    private function openArchive()
+    protected function openArchive()
     {
         $config = [
             'path' => Yii::getAlias($this->backupDir) . DIRECTORY_SEPARATOR,
@@ -393,7 +408,7 @@ class Backup extends Component
     /**
      * Triggers the close action of the archive instance
      */
-    private function closeArchive()
+    protected function closeArchive()
     {
         $this->_backup->close();
     }
@@ -404,7 +419,7 @@ class Backup extends Component
      * @param string $db Name of database connection
      * @return boolean True if dump file was created and added to backup, false otherwise
      */
-    private function backupDatabase($db)
+    protected function backupDatabase($db)
     {
         $flag = true;
         $dbDump = $this->getDriver($db);
@@ -427,7 +442,7 @@ class Backup extends Component
      * @param string $file Full path of the file to append
      * @return boolean True if file was appended to backup file, false otherwise
      */
-    private function addFileToBackup($name, $file)
+    protected function addFileToBackup($name, $file)
     {
         return $this->_backup->addFileToBackup($name, $file);
     }
@@ -439,7 +454,7 @@ class Backup extends Component
      * @param type $folder Full path of the directory to append
      * @return boolean True if directory was appended to backup file, false otherwise
      */
-    private function backupFolder($name, $folder)
+    protected function backupFolder($name, $folder)
     {
         return $this->_backup->addFolderToBackup($name, $folder);
     }
@@ -452,7 +467,7 @@ class Backup extends Component
      * @param string $db Connection name to use
      * @return boolean True if dump was imported, false otherwise
      */
-    private function extractDatabase($db)
+    protected function extractDatabase($db)
     {
         $flag = true;
         $name = 'sql/' . $db . '.sql';
@@ -475,7 +490,7 @@ class Backup extends Component
      * @param string $name Directory name to extract
      * @param string $folder Full path of target directory
      */
-    private function extractFolder($name, $folder)
+    protected function extractFolder($name, $folder)
     {
         $this->_backup->extractFolderFromBackup($name, $folder);
     }
@@ -485,7 +500,7 @@ class Backup extends Component
      *
      * @return array List of expired/deprecated files in backup directory
      */
-    private function getExpiredFiles()
+    protected function getExpiredFiles()
     {
         $backupsFolder = \Yii::getAlias($this->backupDir);
         $expireTimestamp = time() - $this->expireTime;
