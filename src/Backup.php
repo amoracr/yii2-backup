@@ -75,6 +75,21 @@ class Backup extends Component
      */
     public $compression = 'none';
 
+    /** @var mixed The MySQL handler type and configuration. */
+    public $mysqlHandler = [
+        'class' => Mysql::class
+    ];
+    
+    /** @var mixed The SQLite handler type and configuration. */
+    public $sqliteHandler = [
+        'class' => Sqlite::class
+    ];
+
+    /** @var mixed The PostgreSQL handler type and configuration. */
+    public $postgreHandler = [
+        'class' => PostgreSQL::class
+    ];
+
     /** @var int Timestamp of the backup. */
     private $_backupTime;
 
@@ -315,13 +330,13 @@ class Backup extends Component
         $driver = \Yii::$app->$db->driverName;
         switch ($driver) {
             case 'mysql':
-                $handler = new Mysql();
+                $handler = Yii::createObject($this->mysqlHandler);
                 break;
             case 'sqlite':
-                $handler = new Sqlite();
+                $handler = Yii::createObject($this->sqliteHandler);
                 break;
             case 'pgsql':
-                $handler = new PostgreSQL();
+                $handler = Yii::createObject($this->postgreHandler);
                 break;
             default:
                 break;
