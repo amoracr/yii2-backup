@@ -330,13 +330,13 @@ class Backup extends Component
         $driver = \Yii::$app->$db->driverName;
         switch ($driver) {
             case 'mysql':
-                $handler = Yii::createObject($this->mysqlHandler);
+                $handler = \Yii::createObject($this->mysqlHandler);
                 break;
             case 'sqlite':
-                $handler = Yii::createObject($this->sqliteHandler);
+                $handler = \Yii::createObject($this->sqliteHandler);
                 break;
             case 'pgsql':
-                $handler = Yii::createObject($this->postgreHandler);
+                $handler = \Yii::createObject($this->postgreHandler);
                 break;
             default:
                 break;
