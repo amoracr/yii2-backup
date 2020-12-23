@@ -30,8 +30,25 @@ use yii\helpers\FileHelper;
 class Backup extends Component
 {
 
+    /** @var integer Minimum age in seconds for valid backup. */
     const EXPIRE_TIME_MIN = 86400;
+
+    /** @var integer Maximum age in seconds for valid backup. */
     const EXPIRE_TIME_MAX = 31536000;
+
+    /** @var integer Number of seconds of a day. */
+    const DURATION_TIME_DAY = 86400;
+
+    /** @var integer Number of seconds of a week. */
+    const DURATION_TIME_WEEK = 604800;
+
+    /** @var integer Number of seconds of a month (30 days). */
+    const DURATION_TIME_MONTH = 2592000;
+
+    /** @var integer Number of seconds of a year (365 days). */
+    const DURATION_TIME_YEAR = 31536000;
+
+    /** @var string Pattern for backup names. */
     const FILE_NAME_FORMAT = '%sT%s_%s';
 
     /** @var string Path/Alias to folder for backups storing. */
@@ -44,7 +61,7 @@ class Backup extends Component
      *
      * @var int
      */
-    public $expireTime = 86400;
+    public $expireTime = self::DURATION_TIME_DAY;
 
     /**
      * List of files or directories to include in backup.
@@ -79,7 +96,7 @@ class Backup extends Component
     public $mysqlHandler = [
         'class' => Mysql::class
     ];
-    
+
     /** @var mixed The SQLite handler type and configuration. */
     public $sqliteHandler = [
         'class' => Sqlite::class
