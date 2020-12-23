@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+## [1.1.2] 2020-12-23
+### Added
+- Contributing file.
+
 ## [1.1.1] 2020-12-22
 ### Added
 - Repository for packagist assets.
