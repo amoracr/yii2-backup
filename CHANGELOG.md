@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Repository for packagist assets.
+- Code Of Conduct file.
+
+
+### Changed
+- PHP version.
+- Database handler for MySQL databases.
+- Database handler for MariaDB databases.
+- Database handler for SQLite databases.
+- Database handler for PostgreSQL databases.
 
 ## [1.1.0] 2020-12-19
 ### Added
