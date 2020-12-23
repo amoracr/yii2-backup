@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Changed
-- PHP version.
+- Supported PHP versions in composer.json.
+- Internal documentation.
 - Database handler for MySQL databases.
 - Database handler for MariaDB databases.
 - Database handler for SQLite databases.
