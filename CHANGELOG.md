@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+## [1.1.3] 2021-02-19
+### Added
+- ToDo file.
+
+### Changed
+- Validation for dumpCommand property.
+- Validation for loadCommand property.
+- Internal documentation.
+
 ## [1.1.2] 2020-12-23
 ### Added
 - Contributing file.
@@ -37,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changelog file.
 
 ## [1.0.1] 2020-11-29
-## Changed
+### Changed
 - Validation for backupDir property.
 
 ## [1.0.0] 2020-07-11
