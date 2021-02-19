@@ -13,7 +13,7 @@ use amoracr\backup\db\Database;
 use Yii;
 
 /**
- * Component for dumping and restoring database data for MySql databases
+ * Component for dumping and restoring database data for PostgreSQL databases
  *
  * @author Alonso Mora <adelfunscr@gmail.com>
  * @since 1.1.0
