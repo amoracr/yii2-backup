@@ -13,7 +13,7 @@ use yii\base\Component;
 use yii\base\InvalidConfigException;
 
 /**
- * Component for dumping and restoring database data.
+ * Abstract class for managing the database engines.
  *
  * @author Alonso Mora <adelfunscr@gmail.com>
  * @since 1.0
@@ -60,7 +60,7 @@ abstract class Database extends Component
     protected function validateDumpCommand()
     {
         if (!is_string($this->dumpCommand)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" should be string, "' . gettype($this->directories) . '" given.');
+            throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" should be string, "' . gettype($this->dumpCommand) . '" given.');
         } else if (empty($this->dumpCommand)) {
             throw new InvalidConfigException('"' . get_class($this) . '::dumpCommand" can not be empty"');
         }
@@ -76,7 +76,7 @@ abstract class Database extends Component
     protected function validateLoadCommand()
     {
         if (!is_string($this->loadCommand)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::loadCommand" should be string, "' . gettype($this->directories) . '" given.');
+            throw new InvalidConfigException('"' . get_class($this) . '::loadCommand" should be string, "' . gettype($this->loadCommand) . '" given.');
         } else if (empty($this->loadCommand)) {
             throw new InvalidConfigException('"' . get_class($this) . '::loadCommand" can not be empty"');
         }
