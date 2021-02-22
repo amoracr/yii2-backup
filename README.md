@@ -1,5 +1,4 @@
-Yii2-backup
-===========
+# Yii2-backup
 Backup and Restore functionality for Yii2 applications.
 
 This extension is based on:
