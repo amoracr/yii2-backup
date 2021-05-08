@@ -169,7 +169,7 @@ class Sqlite extends Database
      * Gets the column values of a row
      *
      * @param array $row Result set of a query
-     * @return Column values separated by a comma
+     * @return string values separated by a comma
      */
     private function getRowValues(&$row)
     {
