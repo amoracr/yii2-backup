@@ -11,6 +11,7 @@ namespace amoracr\backup\db;
 
 use amoracr\backup\db\Database;
 use Yii;
+use yii\base\InvalidConfigException;
 
 /**
  * Component for dumping and restoring database data for MySql databases
