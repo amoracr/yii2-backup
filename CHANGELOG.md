@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+## [1.1.4] 2021-02-22
+### Added
+- Code of conduct file.
+
+### Changed
+- Readme file.
+- Contributing file.
+- License file.
+
 ## [1.1.3] 2021-02-19
 ### Added
 - Todo file.
@@ -59,6 +68,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for compressing backup file in Bzip2 format.
 - Support for compressing backup file in Gzip format.
 - Support for compressing backup file in Zip format.
-    
-    
-
