@@ -110,7 +110,7 @@ class Backup extends Component
     /** @var int Timestamp of the backup. */
     private $_backupTime;
 
-    /** @var Archive Instance of archive class to handle the backup file. */
+    /** @var mixed Instance of archive class to handle the backup file. */
     private $_backup;
 
     /**
@@ -127,7 +127,6 @@ class Backup extends Component
      * backup folder with timestamp named file.
      *
      * @return string Full path to created backup file
-     * @throws Exception if the configuration is not valid
      */
     public function create()
     {
@@ -149,7 +148,6 @@ class Backup extends Component
      * @param string $file Backup file to restore
      * It can be a full path or a file inside the backup folder.
      * @return boolean True if the file exists, false otherwise
-     * @throws Exception if the configuration is not valid
      */
     public function restore($file)
     {
@@ -339,7 +337,7 @@ class Backup extends Component
      * Gets a database instance according to used database driver of the connection
      *
      * @param string $db Name of database connection
-     * @return Database|null Database instance if driver is supported, null otherwise
+     * @return mixed Database instance if driver is supported, null otherwise
      */
     protected function getDriver($db)
     {
@@ -365,7 +363,7 @@ class Backup extends Component
      * Gets an archive instance according to backup file
      *
      * @param string $file Full path to backup file
-     * @return Archive Instance to handle the backup file
+     * @return mixed Instance to handle the backup file
      */
     protected function getArchive($file)
     {
@@ -468,7 +466,7 @@ class Backup extends Component
      * Appends a whole directory to backup file
      *
      * @param string $name Directory name inside the backup
-     * @param type $folder Full path of the directory to append
+     * @param string $folder Full path of the directory to append
      * @return boolean True if directory was appended to backup file, false otherwise
      */
     protected function backupFolder($name, $folder)
