@@ -125,16 +125,21 @@ class Tar extends Archive
      */
     public function extractFolderFromBackup($name, $folder)
     {
+        $flag = true;
         try {
             $archiveFile = new PharData($this->backup);
             $archiveFile->extractTo($folder, $name . '/');
         } catch (UnexpectedValueException $ex) {
             Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
+            $flag = false;
         } catch (BadMethodCallException $ex) {
             Yii::error("Technically, this should not happen. Details: " . $ex->getMessage());
+            $flag = false;
         } catch (Exception $ex) {
             Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
+            $flag = false;
         }
+        return $flag;
     }
 
 }

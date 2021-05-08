@@ -54,6 +54,7 @@ class Gzip extends TarArchive
      */
     public function close()
     {
+        $flag = true;
         try {
             $archiveFile = new PharData($this->backup);
             $archiveFile->compress(Phar::GZ, $this->extension);
@@ -61,16 +62,20 @@ class Gzip extends TarArchive
             $this->backup = str_replace('.tar', $this->extension, $oldArchive);
             unset($archiveFile);
             Phar::unlinkArchive($oldArchive);
-        } catch (UnexpectedValueException $ex) {
-            Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
-            return false;
-        } catch (BadMethodCallException $ex) {
-            Yii::error("Technically, this should not happen. Details: " . $ex->getMessage());
-            return false;
-        } catch (Exception $ex) {
-            Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
-            return false;
         }
+        catch (UnexpectedValueException $ex) {
+            Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
+            $flag = false;
+        }
+        catch (BadMethodCallException $ex) {
+            Yii::error("Technically, this should not happen. Details: " . $ex->getMessage());
+            $flag = false;
+        }
+        catch (Exception $ex) {
+            Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
+            $flag = false;
+        }
+        return $flag;
     }
 
 }
