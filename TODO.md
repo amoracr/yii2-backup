@@ -8,12 +8,8 @@ Backup and Restore functionality for Yii2 applications.
 - [ ] Add regex for files to skip  
 - [ ] Add support for MSSQL databases  
 
-### In Progress
-
-- [ ] Compatibility for PHP 8  
-
 ### Done ✓
-
+- [x] Compatibility for PHP 8  
 - [x] Add TODO.md  
 - [x] Add CHANGELOG.md  
 - [x] Add CODE_OF_CONDUCT.md  
