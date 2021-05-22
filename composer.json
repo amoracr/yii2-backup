@@ -17,9 +17,16 @@
         }
     ],
     "support": {
+        "email": "adelfunscr@gmail.com",
         "issues": "https://github.com/amoracr/yii2-backup/issues",
         "source": "https://github.com/amoracr/yii2-backup"
     },
+    "funding": [
+        {
+          "type": "paypal.me",
+          "url": "https://paypal.me/adelfunscr?locale.x=en_US"
+        }
+    ],
     "prefer-stable": true,
     "require": {
         "php": "^5.6 || ^7.0 || ^8.0",
@@ -43,7 +50,7 @@
         "ext-bz2": "Need for Bzip2 compression.",
         "ext-zip": "Need for Zip compression.",
         "ext-zlib": "Need for Gzip compression.",
-        "phan/phan":"A static analyzer for PHP."
+        "phan/phan": "A static analyzer for PHP."
     },
     "autoload": {
         "psr-4": {
