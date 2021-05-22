@@ -24,7 +24,7 @@
     "funding": [
         {
           "type": "paypal.me",
-          "url": "https://paypal.me/adelfunscr?locale.x=en_US"
+          "url": "https://paypal.me/adelfunscr"
         }
     ],
     "prefer-stable": true,
