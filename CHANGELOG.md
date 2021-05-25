@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Support for using regex for files to include in backup file.
+- Support for using regex for files to skip in backup file.
+- Support for MSSQL databases.
+
+## [1.2.2] 2021-05-24
+### Changed
+- Code of conduct file.
+- Contributing file.
+- Template file for bug.
+- Template file for feature request.
+
+### Removed
+- Todo file.
 
 ## [1.2.1] 2021-05-21
 ### Added
