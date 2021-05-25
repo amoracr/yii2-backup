@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for MSSQL databases.
 
 ## [1.2.2] 2021-05-24
+### Added
+- Template file for pull request.
+
 ### Changed
 - Code of conduct file.
 - Contributing file.
