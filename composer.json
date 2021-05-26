@@ -4,6 +4,7 @@
     "type": "yii2-extension",
     "keywords": [
         "yii2",
+        "extension"
         "backup",
         "dump"
     ],
@@ -23,7 +24,7 @@
     },
     "funding": [
         {
-          "type": "paypal.me",
+          "type": "paypal",
           "url": "https://paypal.me/adelfunscr"
         }
     ],
@@ -49,8 +50,7 @@
         "ext-pgsql": "Need for PostgreSQL databases.",
         "ext-bz2": "Need for Bzip2 compression.",
         "ext-zip": "Need for Zip compression.",
-        "ext-zlib": "Need for Gzip compression.",
-        "phan/phan": "A static analyzer for PHP."
+        "ext-zlib": "Need for Gzip compression."
     },
     "autoload": {
         "psr-4": {
