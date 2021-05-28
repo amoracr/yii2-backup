@@ -130,9 +130,10 @@ class Sqlite extends Database
      */
     private function dumpTable(&$db, $table, $file)
     {
+        $this->saveToFile("DROP TABLE IF EXISTS `$table`;", $file);
         $sql = $db->querySingle("SELECT sql FROM sqlite_master WHERE name = '$table'") . ";";
         $this->saveToFile($sql, $file);
-        $statement = "INSERT INTO \"%s\" (%s) VALUES (%s);";
+        $statement = "INSERT INTO `%s` (%s) VALUES (%s);";
 
         $rows = $db->query("SELECT * FROM $table");
         if ($rows->numColumns() > 0 && $rows->columnType(0) != SQLITE3_NULL) {
