@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.5] 2021-05-27
 ### Added
-- Plugins for checking source with Phan.
+- Plugins for checking source code with Phan.
 
 ### Changed
 - Database handler for SQLite databases.
