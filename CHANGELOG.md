@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for using regex for files to skip in backup file.
 - Support for MSSQL databases.
 
+## [1.2.4] 2021-05-24
+### Changed
+- Extension details in composer.json.
+
 ## [1.2.2] 2021-05-24
 ### Added
 - Template file for pull request.
