@@ -55,9 +55,9 @@ class Sqlite extends Database
         $fp = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $query = '';
         foreach ($fp as $line) {
-            if ($line != '' && strpos($line, '--') === false) {
+            if ($line !== '' && strpos($line, '--') === false) {
                 $query .= $line;
-                if (substr($query, -1) == ';') {
+                if (substr($query, -1) === ';') {
                     $qr = $db->exec($query);
                     $query = '';
                 }
@@ -96,7 +96,7 @@ class Sqlite extends Database
         }
 
         $sequences = $db->query("SELECT * FROM sqlite_sequence");
-        if ($sequences->numColumns() && $sequences->columnType(0) != SQLITE3_NULL) {
+        if ($sequences->numColumns() > 0 && $sequences->columnType(0) != SQLITE3_NULL) {
             $this->saveToFile("DELETE FROM sqlite_sequence;", $file);
             $statement = "INSERT INTO \"%s\" VALUES (%s);";
             while ($row = $sequences->fetchArray(SQLITE3_ASSOC)) {
@@ -135,7 +135,7 @@ class Sqlite extends Database
         $statement = "INSERT INTO \"%s\" (%s) VALUES (%s);";
 
         $rows = $db->query("SELECT * FROM $table");
-        if ($rows->numColumns() && $rows->columnType(0) != SQLITE3_NULL) {
+        if ($rows->numColumns() > 0 && $rows->columnType(0) != SQLITE3_NULL) {
             $fields = $this->getTableColumns($db, $table);
 
             while ($row = $rows->fetchArray(SQLITE3_ASSOC)) {

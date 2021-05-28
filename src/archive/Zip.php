@@ -65,7 +65,7 @@ class Zip extends Archive
         $zipFile = new ZipArchive();
         $zipFile->open($this->backup, ZipArchive::CREATE);
         $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
+                new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
         );
 
         foreach ($files as $file) {
@@ -113,7 +113,8 @@ class Zip extends Archive
         $targetPath = Yii::getAlias($folder) . DIRECTORY_SEPARATOR;
         for ($i = 0; $i < $zipFile->numFiles; $i++) {
             $entryName = $zipFile->getNameIndex($i);
-            if (strpos($entryName, "{$name}/") !== 0) {
+            $pos = strpos($entryName, "{$name}/");
+            if ($pos === false || $pos != 0) {
                 continue;
             }
 
