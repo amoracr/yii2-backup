@@ -12,7 +12,7 @@ I combined those sources and made a more powerful and easier to use extension.
 
 Supported databases:
 - MySQL
-- MariaDB
+- MariaDB (via MySQL driver)
 - SQLite
 - PostgreSQL
 
