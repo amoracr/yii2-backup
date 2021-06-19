@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2020 Alonso Mora
  * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
  * @link      https://github.com/amoracr/yii2-backup#readme
- * @author    Alonso Mora <adelfunscr@gmail.com>
+ * @author    Alonso Mora <alonso.mora@gmail.com>
  */
 
 namespace amoracr\backup\archive;
@@ -21,7 +21,7 @@ use \UnexpectedValueException;
 /**
  * Component for packing and extracting files and directories using Bzip2 compression.
  *
- * @author Alonso Mora <adelfunscr@gmail.com>
+ * @author Alonso Mora <alonso.mora@gmail.com>
  * @since 1.0
  */
 class Bzip2 extends TarArchive

@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2020 Alonso Mora
  * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
  * @link      https://github.com/amoracr/yii2-backup#readme
- * @author    Alonso Mora <adelfunscr@gmail.com>
+ * @author    Alonso Mora <alonso.mora@gmail.com>
  */
 
 namespace amoracr\backup\db;
@@ -17,7 +17,7 @@ use \SQLite3;
 /**
  * Component for dumping and restoring database data for SQLite databases
  *
- * @author Alonso Mora <adelfunscr@gmail.com>
+ * @author Alonso Mora <alonso.mora@gmail.com>
  * @since 1.0
  */
 class Sqlite extends Database

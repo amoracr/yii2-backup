@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2020 Alonso Mora
  * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
  * @link      https://github.com/amoracr/yii2-backup#readme
- * @author    Alonso Mora <adelfunscr@gmail.com>
+ * @author    Alonso Mora <alonso.mora@gmail.com>
  */
 
 namespace amoracr\backup\db;
@@ -15,7 +15,7 @@ use yii\base\InvalidConfigException;
 /**
  * Abstract class for managing the database engines.
  *
- * @author Alonso Mora <adelfunscr@gmail.com>
+ * @author Alonso Mora <alonso.mora@gmail.com>
  * @since 1.0
  */
 abstract class Database extends Component

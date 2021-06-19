@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2020 Alonso Mora
  * @license   https://github.com/amoracr/yii2-backup/blob/master/LICENSE.md
  * @link      https://github.com/amoracr/yii2-backup#readme
- * @author    Alonso Mora <adelfunscr@gmail.com>
+ * @author    Alonso Mora <alonso.mora@gmail.com>
  */
 
 namespace amoracr\backup\db;
@@ -16,7 +16,7 @@ use yii\base\InvalidConfigException;
 /**
  * Component for dumping and restoring database data for PostgreSQL databases
  *
- * @author Alonso Mora <adelfunscr@gmail.com>
+ * @author Alonso Mora <alonso.mora@gmail.com>
  * @since 1.1.0
  */
 class PostgreSQL extends Database

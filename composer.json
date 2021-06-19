@@ -13,12 +13,12 @@
     "authors": [
         {
             "name": "Alonso Mora",
-            "email": "adelfunscr@gmail.com",
+            "email": "alonso.mora@gmail.com",
             "role": "Creator"
         }
     ],
     "support": {
-        "email": "adelfunscr@gmail.com",
+        "email": "alonso.mora@gmail.com",
         "issues": "https://github.com/amoracr/yii2-backup/issues",
         "source": "https://github.com/amoracr/yii2-backup"
     },
