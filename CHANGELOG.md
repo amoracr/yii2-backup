@@ -8,7 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for using regex for files to include in backup file.
 - Support for using regex for files to skip in backup file.
+- Custom command for MySQL databases.
+- Custom command for MariaDB databases.
+- Custom command for PostgreSQL databases
 - Support for MSSQL databases.
+
+## [1.2.6] 2021-06-19
+### Added
+- Support for PHP 5.1 and later versions.
+
+### Changed
+- Internal documentation.
+- Command for creating backup of MySQL databases.
 
 ## [1.2.5] 2021-05-27
 ### Added
