@@ -14,8 +14,6 @@ use Yii;
 use \BadMethodCallException;
 use \Exception;
 use \PharData;
-use \RecursiveDirectoryIterator;
-use \RecursiveIteratorIterator;
 use \UnexpectedValueException;
 
 /**
@@ -74,17 +72,14 @@ class Tar extends Archive
     {
         try {
             $archiveFile = new PharData($this->backup);
-            $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator(Yii::getAlias($folder)), RecursiveIteratorIterator::LEAVES_ONLY
-            );
+            $directory = is_array($folder) ? Yii::getAlias($folder['path']) : Yii::getAlias($folder);
+            $regex = is_array($folder) ? $folder['regex'] : null;
+            $files = $this->getDirectoryFiles($directory, $regex);
 
             foreach ($files as $file) {
-                $fileName = $file->getFilename();
-                if (!$file->isDir() && !in_array($fileName, $this->skipFiles)) {
-                    $filePath = $file->getRealPath();
-                    $relativePath = $name . DIRECTORY_SEPARATOR . substr($filePath, strlen(Yii::getAlias($folder)) + 1);
-                    $archiveFile->addFile($filePath, $relativePath);
-                }
+                $filePath = $file->getRealPath();
+                $relativePath = $name . DIRECTORY_SEPARATOR . substr($filePath, strlen($directory) + 1);
+                $archiveFile->addFile($filePath, $relativePath);
             }
         } catch (UnexpectedValueException $ex) {
             Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());

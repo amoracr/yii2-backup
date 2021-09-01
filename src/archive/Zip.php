@@ -64,17 +64,14 @@ class Zip extends Archive
     {
         $zipFile = new ZipArchive();
         $zipFile->open($this->backup, ZipArchive::CREATE);
-        $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator(Yii::getAlias($folder)), \RecursiveIteratorIterator::LEAVES_ONLY
-        );
+        $directory = is_array($folder) ? Yii::getAlias($folder['path']) : Yii::getAlias($folder);
+        $regex = is_array($folder) ? $folder['regex'] : null;
+        $files = $this->getDirectoryFiles($directory, $regex);
 
         foreach ($files as $file) {
-            $fileName = $file->getFilename();
-            if (!$file->isDir() && !in_array($fileName, $this->skipFiles)) {
-                $filePath = $file->getRealPath();
-                $relativePath = $name . DIRECTORY_SEPARATOR . substr($filePath, strlen(Yii::getAlias($folder)) + 1);
-                $zipFile->addFile($filePath, $relativePath);
-            }
+            $filePath = $file->getRealPath();
+            $relativePath = $name . DIRECTORY_SEPARATOR . substr($filePath, strlen($directory) + 1);
+            $zipFile->addFile($filePath, $relativePath);
         }
         return $zipFile->close();
     }
