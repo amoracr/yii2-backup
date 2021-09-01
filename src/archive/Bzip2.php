@@ -62,16 +62,13 @@ class Bzip2 extends TarArchive
             $this->backup = str_replace('.tar', $this->extension, $oldArchive);
             unset($archiveFile);
             Phar::unlinkArchive($oldArchive);
-        }
-        catch (UnexpectedValueException $ex) {
+        } catch (UnexpectedValueException $ex) {
             Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
             $flag = false;
-        }
-        catch (BadMethodCallException $ex) {
+        } catch (BadMethodCallException $ex) {
             Yii::error("Technically, this should not happen. Details: " . $ex->getMessage());
             $flag = false;
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             Yii::error("Unable to use backup file. Details: " . $ex->getMessage());
             $flag = false;
         }
