@@ -13,6 +13,7 @@ use yii\base\Component;
 use \FilesystemIterator;
 use \RecursiveCallbackFilterIterator;
 use \RecursiveDirectoryIterator;
+use \RecursiveIteratorIterator;
 
 /**
  * Component for packing and extracting files and directories.
@@ -122,7 +123,6 @@ abstract class Archive extends Component
 
                 if (null !== $pattern) {
                     $pathName = $current->getPathname();
-
                     $flagMatch = (preg_match($pattern, $pathName) == 1) ? true : false;
                 } else {
                     $flagMatch = true;
@@ -130,7 +130,7 @@ abstract class Archive extends Component
 
                 return $flagMatch;
             });
-        $iterator = new \RecursiveIteratorIterator($filter);
+        $iterator = new RecursiveIteratorIterator($filter);
         return $iterator;
     }
 
