@@ -10,6 +10,9 @@
 namespace amoracr\backup\archive;
 
 use yii\base\Component;
+use \FilesystemIterator;
+use \RecursiveCallbackFilterIterator;
+use \RecursiveDirectoryIterator;
 
 /**
  * Component for packing and extracting files and directories.
@@ -75,7 +78,7 @@ abstract class Archive extends Component
      * Appends directoy to backup
      *
      * @param string $name Internal name of file
-     * @param string $folder Full path of directory to append
+     * @param mixed $folder Full path or configuration of directory to append
      */
     abstract public function addFolderToBackup($name, $folder);
 
@@ -95,6 +98,40 @@ abstract class Archive extends Component
     public function getBackupFile()
     {
         return $this->backup;
+    }
+
+    /**
+     * List all files under path
+     *
+     * @param string $path Full path to directory to explore
+     * @param string $pattern Regular expression for searching files
+     * @return \RecursiveIteratorIterator Iterator with found files
+     */
+    protected function getDirectoryFiles($path, $pattern = null)
+    {
+        $directory = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+        $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $pattern) {
+                if (!$current->isFile()) {
+                    return false;
+                }
+
+                $fileName = $current->getFilename();
+                if (in_array($fileName, $this->skipFiles)) {
+                    return false;
+                }
+
+                if (null !== $pattern) {
+                    $pathName = $current->getPathname();
+
+                    $flagMatch = (preg_match($pattern, $pathName) == 1) ? true : false;
+                } else {
+                    $flagMatch = true;
+                }
+
+                return $flagMatch;
+            });
+        $iterator = new \RecursiveIteratorIterator($filter);
+        return $iterator;
     }
 
 }
