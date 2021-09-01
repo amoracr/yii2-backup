@@ -24,8 +24,8 @@
     },
     "funding": [
         {
-          "type": "paypal",
-          "url": "https://paypal.me/adelfunscr"
+            "type": "paypal",
+            "url": "https://paypal.me/adelfunscr"
         }
     ],
     "prefer-stable": true,
@@ -42,7 +42,7 @@
         "ext-bz2": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "phan/phan": "^4.0"
+        "phan/phan": "^5.0"
     },
     "suggest": {
         "ext-mysqli": "Need for MySQL, MariaDB databases.",
