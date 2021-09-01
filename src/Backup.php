@@ -165,8 +165,7 @@ class Backup extends Component
             $this->extractDatabase($database);
         }
 
-        foreach ($this->directories as $name => $value) {
-            $folder = Yii::getAlias($value);
+        foreach ($this->directories as $name => $folder) {
             $this->extractFolder($name, $folder);
         }
 
@@ -265,6 +264,19 @@ class Backup extends Component
     {
         if (!is_array($this->directories)) {
             throw new InvalidConfigException('"' . get_class($this) . '::directories" should be array, "' . gettype($this->directories) . '" given.');
+        }
+
+        foreach ($this->directories as $name => $directory) {
+            if (is_array($directory)) {
+                if (!array_key_exists('path', $directory)) {
+                    throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "path"');
+                }
+                if (!array_key_exists('regex', $directory)) {
+                    throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "regex"');
+                }
+            } elseif (is_string($directory) && empty($this->$directory)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" can not be empty"');
+            }
         }
         return true;
     }
@@ -534,8 +546,8 @@ class Backup extends Component
         };
 
         $files = FileHelper::findFiles($backupsFolder, [
-                    'recursive' => false,
-                    'filter' => $filter,
+                'recursive' => false,
+                'filter' => $filter,
         ]);
         return $files;
     }
