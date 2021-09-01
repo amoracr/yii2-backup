@@ -121,6 +121,13 @@ Advanced Config
                 // format: <inner backup filename> => <path/to/dir>
                 'images' => '@app/web/images',
                 'uploads' => '@app/web/uploads',
+                // format: <inner backup filename> => array('path'=><path/to/dir>,'regex'=><regular/expression/>)
+                // Key 'path' for setting the directory to include
+                // Key 'regex' for setting the regular expression for selecting the files to include
+                'pdf' => [
+                   'path' => '@app/web/documents',
+                   'regex' => '/\.pdf$/',
+                ],
             ],
             // Files to avoid in backup accross all directories
             'skipFiles' => [
@@ -133,6 +140,7 @@ Advanced Config
 **/backups/2020-06-29T182436-0600_myapp-backup.zip/**<br />
 \>images/<br />
 \>uploads/<br />
+\>pdf/<br />
 \>sql/db.sql<br />
 \>sql/db1.sql<br />
 
