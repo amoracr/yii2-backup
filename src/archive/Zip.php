@@ -107,7 +107,8 @@ class Zip extends Archive
     {
         $zipFile = new ZipArchive();
         $zipFile->open($this->backup);
-        $targetPath = Yii::getAlias($folder) . DIRECTORY_SEPARATOR;
+        $directory = is_array($folder) ? Yii::getAlias($folder['path']) : Yii::getAlias($folder);
+        $targetPath = $directory . DIRECTORY_SEPARATOR;
         for ($i = 0; $i < $zipFile->numFiles; $i++) {
             $entryName = $zipFile->getNameIndex($i);
             $pos = strpos($entryName, "{$name}/");

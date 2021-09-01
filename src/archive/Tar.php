@@ -123,7 +123,8 @@ class Tar extends Archive
         $flag = true;
         try {
             $archiveFile = new PharData($this->backup);
-            $archiveFile->extractTo($folder, $name . '/');
+            $directory = is_array($folder) ? Yii::getAlias($folder['path']) : Yii::getAlias($folder);
+            $archiveFile->extractTo($directory, $name . '/');
         } catch (UnexpectedValueException $ex) {
             Yii::error("Could not open '{$this->backup}'. Details: " . $ex->getMessage());
             $flag = false;
