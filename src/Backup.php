@@ -281,6 +281,17 @@ class Backup extends Component
                     throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "regex"');
                 }
             }
+
+            $path = is_array($directory) ? Yii::getAlias($directory['path']) : Yii::getAlias($directory);
+            if (!file_exists($path)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not exists"');
+            }
+            if (!is_readable($path)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" is not readable');
+            }
+            if (!is_writable($path)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" is not writeable');
+            }
         }
         return true;
     }
