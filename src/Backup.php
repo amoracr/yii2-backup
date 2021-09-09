@@ -274,7 +274,7 @@ class Backup extends Component
                 if (!array_key_exists('regex', $directory)) {
                     throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "regex"');
                 }
-            } elseif (is_string($directory) && empty($this->$directory)) {
+            } elseif (is_string($directory) && empty($directory)) {
                 throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" can not be empty"');
             }
         }
