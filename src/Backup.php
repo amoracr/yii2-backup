@@ -222,7 +222,8 @@ class Backup extends Component
     {
         if (!is_string($this->backupDir)) {
             throw new InvalidConfigException('"' . get_class($this) . '::backupDir" should be string, "' . gettype($this->backupDir) . '" given.');
-        } else if (empty($this->backupDir)) {
+        }
+        if (empty($this->backupDir)) {
             throw new InvalidConfigException('"' . get_class($this) . '::backupDir" can not be empty"');
         }
 
@@ -246,9 +247,11 @@ class Backup extends Component
     {
         if (!is_int($this->expireTime)) {
             throw new InvalidConfigException('"' . get_class($this) . '::expireTime" should be integer, "' . gettype($this->expireTime) . '" given.');
-        } else if (self::EXPIRE_TIME_MIN > $this->expireTime) {
+        }
+        if (self::EXPIRE_TIME_MIN > $this->expireTime) {
             throw new InvalidConfigException('"' . get_class($this) . '::expireTime" should be at least ' . self::EXPIRE_TIME_MIN . ' seconds');
-        } else if (self::EXPIRE_TIME_MAX < $this->expireTime) {
+        }
+        if (self::EXPIRE_TIME_MAX < $this->expireTime) {
             throw new InvalidConfigException('"' . get_class($this) . '::expireTime" should be at most ' . self::EXPIRE_TIME_MAX . ' seconds');
         }
         return true;
@@ -320,7 +323,8 @@ class Backup extends Component
     {
         if (!is_array($this->databases)) {
             throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
-        } else if (empty($this->databases)) {
+        }
+        if (empty($this->databases)) {
             throw new InvalidConfigException('"' . get_class($this) . '::databases" can not be empty"');
         }
         return true;
@@ -336,7 +340,8 @@ class Backup extends Component
     {
         if (!is_string($this->fileName)) {
             throw new InvalidConfigException('"' . get_class($this) . '::fileName" should be string, "' . gettype($this->fileName) . '" given.');
-        } else if (empty($this->fileName)) {
+        }
+        if (empty($this->fileName)) {
             throw new InvalidConfigException('"' . get_class($this) . '::fileName" can not be empty"');
         }
         return true;
@@ -352,9 +357,11 @@ class Backup extends Component
     {
         if (!is_string($this->compression)) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" should be string, "' . gettype($this->fileName) . '" given.');
-        } else if (empty($this->compression)) {
+        }
+        if (empty($this->compression)) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" can not be empty"');
-        } else if (!in_array($this->compression, ['none', 'tar', 'zip', 'gzip', 'bzip2'])) {
+        }
+        if (!in_array($this->compression, ['none', 'tar', 'zip', 'gzip', 'bzip2'])) {
             throw new InvalidConfigException('"' . get_class($this) . '::compression" is not a valid option"');
         }
         return true;
