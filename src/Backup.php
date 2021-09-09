@@ -267,6 +267,12 @@ class Backup extends Component
         }
 
         foreach ($this->directories as $name => $directory) {
+            if (!is_array($directory) && !is_string($directory)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" should be array or string, "' . gettype($directory) . '" given.');
+            }
+            if (empty($directory)) {
+                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" can not be empty"');
+            }
             if (is_array($directory)) {
                 if (!array_key_exists('path', $directory)) {
                     throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "path"');
@@ -274,8 +280,6 @@ class Backup extends Component
                 if (!array_key_exists('regex', $directory)) {
                     throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" does not have key "regex"');
                 }
-            } elseif (is_string($directory) && empty($directory)) {
-                throw new InvalidConfigException('Entry "' . $name . '" of ' . get_class($this) . '::directories" can not be empty"');
             }
         }
         return true;
