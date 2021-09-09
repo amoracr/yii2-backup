@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom command for PostgreSQL databases
 - Support for MSSQL databases.
 
+## [1.3.2] 2021-09-09
+### Fixed
+- [Can't backup database, error in source files](https://github.com/amoracr/yii2-backup/issues/4)
+
 ## [1.3.1] 2021-09-01
 ### Changed
 - Readme file.
