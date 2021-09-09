@@ -238,7 +238,7 @@ class Backup extends Component
     }
 
     /**
-     * Checks if property expirteTime is valid
+     * Checks if property expireTime is valid
      *
      * @return boolean True if property value is valid
      * @throws InvalidConfigException if the property value is not valid
