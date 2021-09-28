@@ -11,7 +11,6 @@ namespace amoracr\backup\db;
 
 use amoracr\backup\db\Database;
 use Yii;
-use \PDO;
 use \SQLite3;
 
 /**
@@ -26,18 +25,64 @@ class Sqlite extends Database
     /**
      * @inheritdoc
      */
+    public function init()
+    {
+        parent::init();
+        $this->delimiter = ';';
+        $this->dbEngine = 'SQLite';
+        $this->beginCommands = [
+            "PRAGMA foreign_keys=OFF;\n",
+            "BEGIN TRANSACTION;\n",
+        ];
+        $this->endCommands = [
+            "\nCOMMIT;\n\n",
+            "-- Dump completed\n",
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function dumpDatabase($dbHandle, $path)
     {
-        $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
-        $database = Yii::getAlias($dsn);
-        $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
-        $this->dump($database, $file);
+        $this->dumpFile = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
+        $this->initDb($dbHandle);
+        $this->openDump();
 
-        if (!file_exists($file)) {
+        $this->saveToFile("\n--\n-- Dumping tables for database '{$this->dbName}'\n-- \n");
+        $tables = $this->getTables();
+        foreach ($tables as $table) {
+            $this->dumpTableSchema($table);
+            $this->dumpTableData($table);
+        }
+        $this->dumpTableSequences();
+
+        $this->saveToFile("\n-- \n-- Dumping views for database '{$this->dbName}'\n-- \n");
+        $views = $this->getViews();
+        foreach ($views as $view) {
+            $this->dumpView($view);
+        }
+
+        $this->saveToFile("\n-- \n-- Dumping indexes for database '{$this->dbName}'\n-- \n");
+        $indexes = $this->getIndexes();
+        foreach ($indexes as $index) {
+            $this->dumpIndex($index);
+        }
+
+        $this->saveToFile("\n-- \n-- Dumping triggers for database '{$this->dbName}'\n-- \n");
+        $triggers = $this->getTriggers();
+        foreach ($triggers as $trigger) {
+            $this->dumpTrigger($trigger);
+        }
+
+        $this->closeDump();
+        $this->connection->close();
+
+        if (!file_exists($this->dumpFile)) {
             return false;
         }
 
-        return $file;
+        return $this->dumpFile;
     }
 
     /**
@@ -45,121 +90,168 @@ class Sqlite extends Database
      */
     public function importDatabase($dbHandle, $file)
     {
-        $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
-        $database = Yii::getAlias($dsn);
-        $dsn = 'sqlite:' . $database;
-        $username = Yii::$app->$dbHandle->username;
-        $password = Yii::$app->$dbHandle->password;
-        $db = new PDO($dsn, $username, $password);
-
-        $fp = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $this->initDb($dbHandle);
+        $fp = fopen($file, "r");
         $query = '';
-        foreach ($fp as $line) {
-            if ($line !== '' && strpos($line, '--') === false) {
+
+        while ($line = fgets($fp, 65535)) {
+            $lineLen = strlen($line);
+            $lineStart = substr($line, 0, 2);
+
+            if ($lineLen <= 0 || in_array($lineStart, ['--', '/*'])) {
+                continue;
+            }
+
+            if (strtoupper(substr($line, 0, 10)) === 'DELIMITER ') {
+                $this->delimiter = trim(substr($line, 10));
+            } elseif (substr($trimmedLine = rtrim($line), -strlen($this->delimiter)) === $this->delimiter) {
+                $query .= substr($trimmedLine, 0, -strlen($this->delimiter));
+                $this->connection->exec($query);
+                $query = '';
+            } else {
                 $query .= $line;
-                if (substr($query, -1) === ';') {
-                    $qr = $db->exec($query);
-                    $query = '';
-                }
             }
         }
+
+        if (trim($query) !== '') {
+            $this->connection->exec($query);
+        }
+
+        fclose($fp);
+        $this->connection->close();
         return true;
     }
 
     /**
      * @inheritdoc
-     * Does nothing for this driver
      */
-    protected function prepareCommand($dbHandle, $templateCommand)
+    protected function dumpFunction($function)
     {
 
     }
 
     /**
-     * Creates a dump file for an SQLite3 database
-     *
-     * @param string $dbFile Full path of the database file
-     * @param string $file Full path of the dump file
+     * @inheritdoc
      */
-    private function dump($dbFile, $file)
+    protected function dumpIndex($index)
     {
-        $db = new SQLite3($dbFile, SQLITE3_OPEN_READONLY);
-        $db->busyTimeout(5000);
-
-        $this->saveToFile("-- SQLite3 dump", $file);
-        $this->saveToFile("PRAGMA foreign_keys=OFF;", $file);
-        $this->saveToFile("BEGIN TRANSACTION;", $file);
-
-        $tables = $db->query("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
-        while ($table = $tables->fetchArray(SQLITE3_NUM)) {
-            $this->dumpTable($db, $table[0], $file);
-        }
-
-        $sequences = $db->query("SELECT * FROM sqlite_sequence");
-        if ($sequences->numColumns() > 0 && $sequences->columnType(0) != SQLITE3_NULL) {
-            $this->saveToFile("DELETE FROM sqlite_sequence;", $file);
-            $statement = "INSERT INTO \"%s\" VALUES (%s);";
-            while ($row = $sequences->fetchArray(SQLITE3_ASSOC)) {
-                $values = $this->getRowValues($row);
-                $sql = sprintf($statement, 'sqlite_sequence', $values);
-                $this->saveToFile($sql, $file);
-            }
-        }
-
-        $this->saveToFile("COMMIT;", $file);
+        $this->saveToFile("\n-- Index `$index`\n");
+        $this->saveToFile("DROP INDEX IF EXISTS `$index`;\n");
+        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type = 'index' AND name = '$index'") . ";";
+        $this->saveToFile("$sql\n");
     }
 
     /**
-     * Adds content to dump file
-     *
-     * @param string $text Content to save
-     * @param string $file Full path of dump file
+     * @inheritdoc
      */
-    private function saveToFile($text, $file)
+    protected function dumpProcedure($procedure)
     {
-        $content = $text . "\n";
-        file_put_contents($file, $content, FILE_APPEND);
+
     }
 
     /**
-     * Dumps data of a database table in a file
-     *
-     * @param SQLite3 $db Database reference
-     * @param string $table Name of table
-     * @param string $file Full path of dump file
+     * @inheritdoc
      */
-    private function dumpTable(&$db, $table, $file)
+    protected function dumpTableData($table)
     {
-        $this->saveToFile("DROP TABLE IF EXISTS `$table`;", $file);
-        $sql = $db->querySingle("SELECT sql FROM sqlite_master WHERE name = '$table'") . ";";
-        $this->saveToFile($sql, $file);
-        $statement = "INSERT INTO `%s` (%s) VALUES (%s);";
+        $this->saveToFile("\n-- Data for table `$table`\n");
+        $numeric = [];
+        $statement = "INSERT INTO `%s` (%s) VALUES (%s);\n";
 
-        $rows = $db->query("SELECT * FROM $table");
+        $rows = $this->connection->query("SELECT * FROM $table");
         if ($rows->numColumns() > 0 && $rows->columnType(0) != SQLITE3_NULL) {
-            $fields = $this->getTableColumns($db, $table);
+            $fields = $this->getTableColumns($table, $numeric);
 
             while ($row = $rows->fetchArray(SQLITE3_ASSOC)) {
-                $values = $this->getRowValues($row);
+                $values = $this->getTableRowValues($row, $numeric);
                 $sql = sprintf($statement, $table, $fields, $values);
-                $this->saveToFile($sql, $file);
+                $this->saveToFile($sql);
             }
         }
     }
 
     /**
-     * Gets the column names of a database table
-     *
-     * @param SQLite3 $db Database reference
-     * @param string $table Name of table
-     * @return string Column names separated by a comma
+     * @inheritdoc
      */
-    private function getTableColumns(&$db, $table)
+    protected function dumpTableSchema($table)
+    {
+        $this->saveToFile("\n-- Table structure for table  `$table`\n");
+        $this->saveToFile("DROP TABLE IF EXISTS `$table`;\n");
+        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type ='table' AND name = '$table'") . ";";
+        $this->saveToFile("$sql\n");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function dumpTrigger($tableTrigger)
+    {
+        $this->saveToFile("\n-- Trigger `$tableTrigger`\n");
+        $this->saveToFile("DROP TRIGGER IF EXISTS `$tableTrigger`;\n");
+        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = '$tableTrigger'") . ";";
+        $this->saveToFile("$sql\n");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function dumpView($view)
+    {
+        $this->saveToFile("\n-- View `$view`\n");
+        $this->saveToFile("DROP VIEW IF EXISTS `$view`;\n");
+        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type = 'view' AND name = '$view'") . ";";
+        $this->saveToFile("$sql\n");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function escapeName($string)
+    {
+        return '"' . str_replace('"', '""', $string) . '"';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getFunctions()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getIndexes()
+    {
+        $list = [];
+        $res = $this->connection->query("SELECT name, tbl_name FROM sqlite_master WHERE type ='index' AND name NOT LIKE 'sqlite_autoindex%' ORDER BY tbl_name");
+        while ($row = $res->fetchArray(SQLITE3_NUM)) {
+            array_push($list, $row[0]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getProcedures()
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getTableColumns(&$table, &$numericColumns): string
     {
         $fieldnames = [];
-        $columns = $db->query("PRAGMA table_info($table)");
+        $columns = $this->connection->query("PRAGMA table_info($table)");
         while ($column = $columns->fetchArray(SQLITE3_ASSOC)) {
-            array_push($fieldnames, $column["name"]);
+            $col = $column["name"];
+            array_push($fieldnames, $col);
+            $numericColumns[$col] = (bool) preg_match('#^[^(]*(BYTE|COUNTER|SERIAL|INT|LONG$|CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER)#i', $column['type']);
         }
 
         $fields = implode(",", $fieldnames);
@@ -167,18 +259,100 @@ class Sqlite extends Database
     }
 
     /**
-     * Gets the column values of a row
-     *
-     * @param array $row Result set of a query
-     * @return string values separated by a comma
+     * @inheritdoc
      */
-    private function getRowValues(&$row)
+    protected function getTableRowValues(&$row, &$numericColumns): string
     {
-        foreach ($row as $k => $v) {
-            $row[$k] = "'" . SQLite3::escapeString($v) . "'";
+        $values = [];
+        foreach ($row as $key => $value) {
+            if (null === $value) {
+                array_push($values, "NULL");
+            } elseif (true === $numericColumns[$key]) {
+                array_push($values, $value);
+            } else {
+                $s = "'" . SQLite3::escapeString($value) . "'";
+                array_push($values, $s);
+            }
         }
-        $values = implode(",", $row);
-        return $values;
+        $rowValues = implode(",", $values);
+        return $rowValues;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getTables()
+    {
+        $list = [];
+        $res = $this->connection->query("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
+        while ($row = $res->fetchArray(SQLITE3_NUM)) {
+            array_push($list, $row[0]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getTriggers()
+    {
+        $list = [];
+        $res = $this->connection->query("SELECT name FROM sqlite_master WHERE type = 'trigger';");
+        while ($row = $res->fetchArray(SQLITE3_NUM)) {
+            array_push($list, $row[0]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getViews()
+    {
+        $list = [];
+        $res = $this->connection->query("SELECT name FROM sqlite_master WHERE type = 'view';");
+        while ($row = $res->fetchArray(SQLITE3_NUM)) {
+            array_push($list, $row[0]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function initDb($dbHandle)
+    {
+        $dsn = str_replace('sqlite:', '', Yii::$app->$dbHandle->dsn);
+        $database = Yii::getAlias($dsn);
+        $this->dbName = $database;
+        $this->dbVersion = Yii::$app->$dbHandle->serverVersion;
+        $dsn = 'sqlite:' . $database;
+        $this->connection = new SQLite3($database, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+        $this->connection->busyTimeout(5000);
+    }
+
+    /**
+     * Dumps data of table 'sqlite_sequence'
+     */
+    private function dumpTableSequences()
+    {
+        $table = 'sqlite_sequence';
+        $sequences = $this->connection->query("SELECT * FROM $table");
+        if ($sequences->numColumns() > 0 && $sequences->columnType(0) != SQLITE3_NULL) {
+            $this->saveToFile("\n-- Data for table `$table`\n");
+            $this->saveToFile("DELETE FROM $table;\n");
+            $statement = "INSERT INTO \"%s\" (%s) VALUES (%s);\n";
+            $numeric = [];
+            $fields = $this->getTableColumns($table, $numeric);
+            while ($row = $sequences->fetchArray(SQLITE3_ASSOC)) {
+                $values = $this->getRowValues($row, $numeric);
+                $sql = sprintf($statement, $table, $fields, $values);
+                $this->saveToFile($sql);
+            }
+        }
     }
 
 }
