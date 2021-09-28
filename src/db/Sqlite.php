@@ -244,7 +244,7 @@ class Sqlite extends Database
     /**
      * @inheritdoc
      */
-    protected function getTableColumns(&$table, &$numericColumns): string
+    protected function getTableColumns(&$table, &$numericColumns)
     {
         $fieldnames = [];
         $columns = $this->connection->query("PRAGMA table_info($table)");
@@ -261,7 +261,7 @@ class Sqlite extends Database
     /**
      * @inheritdoc
      */
-    protected function getTableRowValues(&$row, &$numericColumns): string
+    protected function getTableRowValues(&$row, &$numericColumns)
     {
         $values = [];
         foreach ($row as $key => $value) {
