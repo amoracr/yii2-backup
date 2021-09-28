@@ -142,7 +142,9 @@ class Mysql extends Database
         }
 
         if (trim($sql) !== '') {
-            $this->connection->query($sql);
+            if (!$this->connection->query($sql)) {
+                throw new Exception($this->connection->error . ': ' . $sql);
+            }
         }
         fclose($fp);
         $this->connection->close();
