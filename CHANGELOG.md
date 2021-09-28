@@ -6,11 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Support for using regex for files to skip in backup file.
-- Custom command for MySQL databases.
-- Custom command for MariaDB databases.
-- Custom command for PostgreSQL databases
 - Support for MSSQL databases.
+
+### Fixed
+- [The database backup file always empty](https://github.com/amoracr/yii2-backup/issues/3)
 
 ## [1.3.3] 2021-09-09
 ### Changed
