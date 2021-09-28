@@ -82,12 +82,6 @@ class PostgreSQL extends Database
             $this->dumpIndex($index);
         }
 
-        $this->saveToFile("\n-- \n-- Dumping triggers for database '{$this->dbName}'\n-- \n");
-        $triggers = $this->getTriggers();
-        foreach ($triggers as $trigger) {
-            $this->dumpTrigger($trigger);
-        }
-
         $this->saveToFile("\n-- \n-- Dumping routines for database '{$this->dbName}'\n-- \n");
         $functions = $this->getFunctions();
         foreach ($functions as $function) {
@@ -97,6 +91,12 @@ class PostgreSQL extends Database
         $procedures = $this->getProcedures();
         foreach ($procedures as $procedure) {
             $this->dumpProcedure($procedure);
+        }
+
+        $this->saveToFile("\n-- \n-- Dumping triggers for database '{$this->dbName}'\n-- \n");
+        $triggers = $this->getTriggers();
+        foreach ($triggers as $trigger) {
+            $this->dumpTrigger($trigger);
         }
 
         pg_close($this->connection);
