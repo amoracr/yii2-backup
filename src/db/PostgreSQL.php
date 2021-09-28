@@ -140,10 +140,14 @@ class PostgreSQL extends Database
         }
 
         if (trim($sql) !== '') {
-            $this->connection->query($sql);
+            if (false === pg_query($this->connection, $sql)) {
+                $msg = pg_last_error($this->connection);
+                throw new Exception($msg);
+            }
         }
+
         fclose($fp);
-        $this->connection->close();
+        pg_close($this->connection);
         return true;
     }
 
