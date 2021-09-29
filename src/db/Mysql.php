@@ -164,7 +164,7 @@ class Mysql extends Database
         $row = $res->fetch_assoc();
         $sql = (is_array($row) && isset($row['Create Function'])) ? $row['Create Function'] : '';
         $this->saveToFile("$sql;\n\n");
-        $this->saveToFile("DELIMITER ;;\n\n");
+        $this->saveToFile("DELIMITER ;\n\n");
         $res->close();
     }
 
