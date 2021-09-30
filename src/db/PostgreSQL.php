@@ -156,7 +156,35 @@ class PostgreSQL extends Database
      */
     protected function dumpFunction($function)
     {
+        $result = pg_query($this->connection, "
+            SELECT n.nspname as function_schema,
+                   p.proname as function_name,
+                   l.lanname as function_language,
+                   CASE WHEN l.lanname = 'internal' THEN p.prosrc
+                        ELSE pg_get_functiondef(p.oid)
+                        END AS definition,
+                   pg_get_function_arguments(p.oid) AS function_arguments,
+                   t.typname AS return_type
+            FROM pg_proc p
+            LEFT JOIN pg_namespace n ON p.pronamespace = n.oid
+            LEFT JOIN pg_language l ON p.prolang = l.oid
+            LEFT JOIN pg_type t ON t.oid = p.prorettype
+            WHERE n.nspname NOT LIKE 'pg_%'
+                AND n.nspname != 'information_schema'
+                AND p.proname = '$function'
+            ORDER BY function_schema,
+                     function_name
+         ");
 
+        while ($row = pg_fetch_row($result)) {
+            $def = (string) $row[3];
+            $trimmedDef = rtrim($def);
+            $sql = str_ireplace("CREATE FUNCTION", "CREATE OR REPLACE FUNCTION", $trimmedDef);
+            $this->saveToFile("\n-- Function $function\n");
+            $this->saveToFile("-- DELIMITER ;;\n");
+            $this->saveToFile("$sql;;\n");
+            $this->saveToFile("-- DELIMITER ;\n");
+        }
     }
 
     /**
@@ -183,7 +211,35 @@ class PostgreSQL extends Database
      */
     protected function dumpProcedure($procedure)
     {
+        $result = pg_query($this->connection, "
+            SELECT n.nspname as schema_name,
+                   p.proname as procedure_name,
+                   l.lanname as language,
+                   CASE WHEN l.lanname = 'internal' then p.prosrc
+                       ELSE pg_get_functiondef(p.oid)
+                       END AS definition,
+                   pg_get_function_arguments(p.oid) AS arguments
+            FROM pg_proc p
+            LEFT JOIN pg_namespace n ON p.pronamespace = n.oid
+            LEFT JOIN pg_language l ON p.prolang = l.oid
+            LEFT JOIN pg_type t ON t.oid = p.prorettype
+            WHERE n.nspname NOT LIKE 'pg_%',
+                AND n.nspname != 'information_schema'
+                AND p.prokind = 'p'
+                AND p.proname = '$procedure'
+            ORDER BY schema_name,
+                     procedure_name
+            ");
 
+        while ($row = pg_fetch_row($result)) {
+            $def = (string) $row[3];
+            $trimmedDef = rtrim($def);
+            $sql = str_ireplace("CREATE PROCEDURE", "CREATE OR REPLACE PROCEDURE", $trimmedDef);
+            $this->saveToFile("\n-- Procedure $procedure\n");
+            $this->saveToFile("-- DELIMITER ;;\n");
+            $this->saveToFile("$sql;;\n");
+            $this->saveToFile("-- DELIMITER ;\n");
+        }
     }
 
     /**
@@ -229,7 +285,45 @@ class PostgreSQL extends Database
      */
     protected function dumpTrigger($tableTrigger)
     {
+        $result = pg_query($this->connection, "
+            SELECT event_object_schema AS table_schema,
+                   event_object_table AS table_name,
+                   trigger_schema,
+                   trigger_name,
+                   string_agg(event_manipulation, ',') AS event,
+                   action_timing AS activation,
+                   action_condition AS condition,
+                   action_statement AS definition
+            FROM information_schema.triggers
+            WHERE event_object_table = '$tableTrigger'
+            GROUP BY table_schema,
+                   table_name,
+                   trigger_schema,
+                   trigger_name,
+                   event,
+                   activation,
+                   condition,
+                   definition
+            ORDER BY table_schema,
+                     table_name
+         ");
 
+        while ($row = pg_fetch_row($result)) {
+            $table_schema = (string) $row[0];
+            $table_name = (string) $row[1];
+            $trigger_name = (string) $row[3];
+            $event = (string) $row[4];
+            $activation = (string) $row[5];
+            $condition = (string) $row[6];
+            $definition = (string) $row[7];
+            $condition = !empty($condition) ? "WHEN $condition" : '';
+            $comment = sprintf("\n-- Trigger %s for table %s.%s\n", $trigger_name, $table_schema, $table_name);
+            $this->saveToFile($comment);
+            $sql = str_ireplace(["{name}", "{activation}", "{event}", "{schema}", "{table}", "{condition}", "{definition}"],
+                                [$trigger_name, $activation, $event, $table_schema, $table_name, $condition, $definition],
+                                "CREATE TRIGGER {name} {activation} {event} ON {schema}.{table} {condition} {definition};");
+            $this->saveToFile("$sql\n");
+        }
     }
 
     /**
@@ -267,7 +361,21 @@ class PostgreSQL extends Database
      */
     protected function getFunctions()
     {
-        return [];
+        $list = [];
+        $result = pg_query($this->connection, "
+            SELECT quote_ident(n.nspname) as function_schema,
+                   quote_ident(p.proname) as function_name
+            FROM pg_catalog.pg_proc p
+            JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+            WHERE n.nspname NOT LIKE 'pg_%'
+                AND n.nspname != 'information_schema'
+        ");
+
+        while ($row = pg_fetch_row($result)) {
+            array_push($list, $row[1]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
     }
 
     /**
@@ -295,7 +403,25 @@ class PostgreSQL extends Database
      */
     protected function getProcedures()
     {
-        return [];
+        $list = [];
+        $result = pg_query($this->connection, "
+            SELECT n.nspname as schema_name,
+                   p.proname as procedure_name
+            FROM pg_proc p
+            LEFT JOIN pg_namespace n ON p.pronamespace = n.oid
+            LEFT JOIN pg_language l ON p.prolang = l.oid
+            LEFT JOIN pg_type t ON t.oid = p.prorettype
+            WHERE n.nspname NOT LIKE 'pg_%'
+                AND n.nspname != 'information_schema'
+                AND p.prokind = 'p'
+            ORDER BY schema_name,
+                     procedure_name
+            ");
+        while ($row = pg_fetch_row($result)) {
+            array_push($list, $row[1]);
+        }
+        sort($list, SORT_STRING | SORT_FLAG_CASE);
+        return $list;
     }
 
     /**
@@ -443,7 +569,7 @@ class PostgreSQL extends Database
     }
 
     /**
-     * Gets the schema of a database table
+     * Returns the schema name of a table
      *
      * @param string $table Name of table
      * @return string String with table schema
