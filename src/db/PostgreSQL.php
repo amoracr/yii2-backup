@@ -172,8 +172,8 @@ class PostgreSQL extends Database
             WHERE n.nspname NOT LIKE 'pg_%'
                 AND n.nspname != 'information_schema'
                 AND p.proname = '$function'
-            ORDER BY function_schema,
-                     function_name
+            ORDER BY function_schema ASC,
+                     function_name ASC
          ");
 
         while ($row = pg_fetch_row($result)) {
@@ -200,8 +200,8 @@ class PostgreSQL extends Database
             ");
         while ($row = pg_fetch_row($result)) {
             $def = (string) $row[1];
-            $this->saveToFile("\n-- Index $index\nDROP INDEX IF EXISTS $index;\n");
-            $sql = trim($def);
+            $sql = sprintf("\n-- Index %s\nDROP INDEX IF EXISTS \"%s\";\n", $index, $index);
+            $sql .= trim($def);
             $this->saveToFile("$sql;\n");
         }
     }
@@ -227,8 +227,8 @@ class PostgreSQL extends Database
                 AND n.nspname != 'information_schema'
                 AND p.prokind = 'p'
                 AND p.proname = '$procedure'
-            ORDER BY schema_name,
-                     procedure_name
+            ORDER BY schema_name ASC,
+                     procedure_name ASC
             ");
 
         while ($row = pg_fetch_row($result)) {
@@ -248,13 +248,14 @@ class PostgreSQL extends Database
     protected function dumpTableData($table)
     {
         $numeric = [];
-        $fields = $this->getTableColumns($table, $numeric);
-        $result = pg_query($this->connection, "SELECT * FROM \"$table\"");
+        $tableName = explode('.', $table)[1];
+        $fields = $this->getTableColumns($tableName, $numeric);
+        $result = pg_query($this->connection, "SELECT * FROM $table");
         $this->saveToFile("\n-- Data for table '$table'\n");
         $size = 0;
         while ($row = pg_fetch_assoc($result)) {
             $s = $this->getTableRowValues($row, $numeric);
-            $s = ($size == 0) ? "INSERT INTO \"$table\" ($fields) VALUES\n$s" : ",\n$s";
+            $s = ($size == 0) ? "INSERT INTO $table ($fields) VALUES\n$s" : ",\n$s";
 
             $len = strlen($s);
             $this->saveToFile($s);
@@ -275,8 +276,62 @@ class PostgreSQL extends Database
      */
     protected function dumpTableSchema($table)
     {
-        $this->saveToFile("\n-- Table structure for table '$table'\nDROP TABLE \"$table\" CASCADE;\n");
-        $sql = $this->getTableSchema($table);
+        $tableName = explode('.', $table)[1];
+        $this->saveToFile("\n-- Table structure for table $table\nDROP TABLE IF EXISTS {$table} CASCADE;\n");
+
+        $str = "CREATE TABLE {$table} (";
+        $result = pg_query($this->connection, "
+            SELECT attnum,
+                   attname,
+                   typname,
+                   atttypmod-4,
+                   attnotnull,
+                   atthasdef, adsrc AS def
+            FROM pg_attribute,
+                 pg_class,
+                 pg_type,
+                 pg_attrdef
+            WHERE pg_class.oid=attrelid
+                AND pg_type.oid=atttypid
+                AND attnum>0
+                AND pg_class.oid=adrelid
+                AND adnum=attnum
+                AND atthasdef='t'
+                AND lower(relname)= '$tableName'
+            UNION
+            SELECT attnum,
+                   attname,
+                   typname,
+                   atttypmod-4,
+                   attnotnull,
+                   atthasdef,
+                   '' AS def
+            FROM pg_attribute,
+                 pg_class,
+                 pg_type
+            WHERE pg_class.oid=attrelid
+                AND pg_type.oid=atttypid
+                AND attnum>0
+                AND atthasdef='f'
+                AND lower(relname)= '$tableName'
+        ");
+
+        while ($row = pg_fetch_row($result)) {
+            $str .= "\n" . $row[1] . " " . $row[2];
+            if ($row[2] === "varchar") {
+                $str .= "(" . $row[3] . ")";
+            }
+            if ($row[4] === "t") {
+                $str .= " NOT NULL";
+            }
+            if ($row[5] === "t") {
+                $str .= " DEFAULT " . $row[6];
+            }
+            $str .= ",";
+        }
+
+        $sql = rtrim($str, ",");
+        $sql .= "\n);";
         $this->saveToFile("$sql");
     }
 
@@ -297,15 +352,15 @@ class PostgreSQL extends Database
             FROM information_schema.triggers
             WHERE event_object_table = '$tableTrigger'
             GROUP BY table_schema,
-                   table_name,
-                   trigger_schema,
-                   trigger_name,
-                   event,
-                   activation,
-                   condition,
-                   definition
-            ORDER BY table_schema,
-                     table_name
+                     table_name,
+                     trigger_schema,
+                     trigger_name,
+                     event,
+                     activation,
+                     condition,
+                     definition
+            ORDER BY table_schema ASC,
+                     table_name ASC
          ");
 
         while ($row = pg_fetch_row($result)) {
@@ -337,13 +392,15 @@ class PostgreSQL extends Database
                definition
         FROM pg_catalog.pg_views
         WHERE viewname = '$view'
-            AND schemaname NOT IN ('pg_catalog', 'information_schema')
+            AND schemaname NOT LIKE 'pg_%'
+            AND schemaname != 'information_schema'
         ");
         while ($row = pg_fetch_row($result)) {
             $schema = (string) $row[0];
             $def = (string) $row[2];
-            $this->saveToFile("\n-- View $view\nDROP VIEW IF EXISTS $view;\n");
-            $sql = sprintf("CREATE VIEW %s.%s AS \n%s", trim($schema), $view, trim($def));
+            $this->saveToFile("\n-- View $view\n");
+            $sql = sprintf("DROP VIEW IF EXISTS %s.%s;\n", trim($schema), $view);
+            $sql .= sprintf("CREATE VIEW %s.%s AS \n%s", trim($schema), $view, trim($def));
             $this->saveToFile("$sql\n");
         }
     }
@@ -369,6 +426,8 @@ class PostgreSQL extends Database
             JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
             WHERE n.nspname NOT LIKE 'pg_%'
                 AND n.nspname != 'information_schema'
+            ORDER BY function_schema ASC,
+                     function_name ASC
         ");
 
         while ($row = pg_fetch_row($result)) {
@@ -414,8 +473,8 @@ class PostgreSQL extends Database
             WHERE n.nspname NOT LIKE 'pg_%'
                 AND n.nspname != 'information_schema'
                 AND p.prokind = 'p'
-            ORDER BY schema_name,
-                     procedure_name
+            ORDER BY schema_name ASC,
+                     procedure_name ASC
             ");
         while ($row = pg_fetch_row($result)) {
             array_push($list, $row[1]);
@@ -476,16 +535,18 @@ class PostgreSQL extends Database
     {
         $list = [];
         $result = pg_query($this->connection, "
-            SELECT relname AS tablename
-            FROM pg_class
-            WHERE relkind IN ('r')
-                AND relname NOT LIKE 'pg_%'
-                AND relname NOT LIKE 'sql_%'
+            SELECT schemaname,
+                   tablename
+            FROM pg_catalog.pg_tables
+            WHERE schemaname NOT LIKE 'pg_%'
+                AND schemaname != 'information_schema'
             ORDER BY tablename ASC
         ");
 
         while ($row = pg_fetch_row($result)) {
-            array_push($list, $row[0]);
+            $schema = (string) $row[0];
+            $table = (string) $row[1];
+            array_push($list, "{$schema}.{$table}");
         }
         sort($list, SORT_STRING | SORT_FLAG_CASE);
         return $list;
@@ -498,11 +559,13 @@ class PostgreSQL extends Database
     {
         $list = [];
         $result = pg_query($this->connection, "
-            SELECT  event_object_table AS table_name,
-                    trigger_name
+            SELECT event_object_table AS table_name,
+                   trigger_name
             FROM information_schema.triggers
-            GROUP BY table_name, trigger_name
-            ORDER BY table_name, trigger_name
+            GROUP BY table_name,
+                     trigger_name
+            ORDER BY table_name ASC,
+                     trigger_name ASC
             ");
         while ($row = pg_fetch_row($result)) {
             array_push($list, $row[0]);
@@ -523,8 +586,10 @@ class PostgreSQL extends Database
             SELECT schemaname,
                    viewname
             FROM pg_catalog.pg_views
-            WHERE schemaname NOT IN ('pg_catalog', 'information_schema')
-            ORDER BY schemaname, viewname
+            WHERE schemaname NOT LIKE 'pg_%'
+                AND schemaname != 'information_schema'
+            ORDER BY schemaname ASC,
+                     viewname ASC
             ");
 
         while ($row = pg_fetch_row($result)) {
@@ -569,70 +634,6 @@ class PostgreSQL extends Database
     }
 
     /**
-     * Returns the schema name of a table
-     *
-     * @param string $table Name of table
-     * @return string String with table schema
-     */
-    private function getTableSchema($table)
-    {
-        $str = "CREATE TABLE \"$table\" (";
-        $result = pg_query($this->connection, "
-            SELECT attnum,
-                   attname,
-                   typname,
-                   atttypmod-4,
-                   attnotnull,
-                   atthasdef, adsrc AS def
-            FROM pg_attribute,
-                 pg_class,
-                 pg_type,
-                 pg_attrdef
-            WHERE pg_class.oid=attrelid
-                AND pg_type.oid=atttypid
-                AND attnum>0
-                AND pg_class.oid=adrelid
-                AND adnum=attnum
-                AND atthasdef='t'
-                AND lower(relname)= '$table'
-            UNION
-            SELECT attnum,
-                   attname,
-                   typname,
-                   atttypmod-4,
-                   attnotnull,
-                   atthasdef,
-                   '' AS def
-            FROM pg_attribute,
-                 pg_class,
-                 pg_type
-            WHERE pg_class.oid=attrelid
-                AND pg_type.oid=atttypid
-                AND attnum>0
-                AND atthasdef='f'
-                AND lower(relname)= '$table'
-        ");
-
-        while ($row = pg_fetch_row($result)) {
-            $str .= "\n" . $row[1] . " " . $row[2];
-            if ($row[2] === "varchar") {
-                $str .= "(" . $row[3] . ")";
-            }
-            if ($row[4] === "t") {
-                $str .= " NOT NULL";
-            }
-            if ($row[5] === "t") {
-                $str .= " DEFAULT " . $row[6];
-            }
-            $str .= ",";
-        }
-
-        $sql = rtrim($str, ",");
-        $sql .= "\n);";
-        return $sql;
-    }
-
-    /**
      * Dumps indexes of a database table in file
      *
      */
@@ -651,7 +652,8 @@ class PostgreSQL extends Database
             JOIN pg_class cls ON pgc.conrelid = cls.oid
             LEFT JOIN information_schema.constraint_column_usage ccu ON pgc.conname = ccu.constraint_name AND nsp.nspname = ccu.constraint_schema
             WHERE contype != 'f'
-            ORDER BY table_name ASC, constraint_name ASC
+            ORDER BY table_name ASC,
+                     constraint_name ASC
             ");
 
         while ($row = pg_fetch_row($result)) {
@@ -687,7 +689,8 @@ class PostgreSQL extends Database
             JOIN pg_catalog.pg_namespace nf ON (nf.oid = clf.relnamespace)
             JOIN pg_catalog.pg_attribute af ON (af.attrelid = ct.confrelid AND  af.attnum = ct.confkey[1])
             LEFT JOIN information_schema.constraint_column_usage ccu ON ct.conname = ccu.constraint_name AND n.nspname = ccu.constraint_schema
-            ORDER BY table_name ASC, constraint_name ASC
+            ORDER BY table_name ASC,
+                     constraint_name ASC
             ");
 
         while ($row = pg_fetch_row($result)) {
