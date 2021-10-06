@@ -348,7 +348,7 @@ class Sqlite extends Database
             $numeric = [];
             $fields = $this->getTableColumns($table, $numeric);
             while ($row = $sequences->fetchArray(SQLITE3_ASSOC)) {
-                $values = $this->getRowValues($row, $numeric);
+                $values = $this->getTableRowValues($row, $numeric);
                 $sql = sprintf($statement, $table, $fields, $values);
                 $this->saveToFile($sql);
             }
