@@ -345,20 +345,21 @@ class PostgreSQL extends Database
                    event_object_table AS table_name,
                    trigger_schema,
                    trigger_name,
-                   string_agg(event_manipulation, ',') AS event,
+                   string_agg(event_manipulation, ' OR ') AS event,
                    action_timing AS activation,
                    action_condition AS condition,
-                   action_statement AS definition
+                   action_statement AS definition,
+                   action_orientation AS scope
             FROM information_schema.triggers
             WHERE event_object_table = '$tableTrigger'
             GROUP BY table_schema,
                      table_name,
                      trigger_schema,
                      trigger_name,
-                     event,
                      activation,
                      condition,
-                     definition
+                     definition,
+                     scope
             ORDER BY table_schema ASC,
                      table_name ASC
          ");
@@ -371,12 +372,17 @@ class PostgreSQL extends Database
             $activation = (string) $row[5];
             $condition = (string) $row[6];
             $definition = (string) $row[7];
+            $scope = (string) $row[8];
             $condition = !empty($condition) ? "WHEN $condition" : '';
+            $scope = !empty($scope) ? "FOR EACH $scope" : '';
             $comment = sprintf("\n-- Trigger %s for table %s.%s\n", $trigger_name, $table_schema, $table_name);
             $this->saveToFile($comment);
-            $sql = str_ireplace(["{name}", "{activation}", "{event}", "{schema}", "{table}", "{condition}", "{definition}"],
-                                [$trigger_name, $activation, $event, $table_schema, $table_name, $condition, $definition],
-                                "CREATE TRIGGER {name} {activation} {event} ON {schema}.{table} {condition} {definition};");
+            $sql = str_ireplace(["{name}", "{schema}", "{table}"],
+                                [$trigger_name, $table_schema, $table_name],
+                                "DROP TRIGGER IF EXISTS {name} ON {schema}.{table} CASCADE;\n");
+            $sql .= str_ireplace(["{name}", "{activation}", "{event}", "{schema}", "{table}", "{scope}", "{condition}", "{definition}"],
+                                 [$trigger_name, $activation, $event, $table_schema, $table_name, $scope, $condition, $definition],
+                                 "CREATE TRIGGER {name} {activation} {event} ON {schema}.{table} {scope} {condition} {definition};");
             $this->saveToFile("$sql\n");
         }
     }
