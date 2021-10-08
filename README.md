@@ -19,6 +19,9 @@ This extension is based on:
 - [how-to-list-triggers-in-postgresql-database](https://soft-builder.com/how-to-list-triggers-in-postgresql-database/)
 - [postgresql-how-to-show-stored-procedure](https://tableplus.com/blog/2018/08/postgresql-how-to-show-stored-procedure.html)
 - [how-to-list-indexes-created-for-table-in-postgres](https://stackoverflow.com/questions/37329561/how-to-list-indexes-created-for-table-in-postgres/37330092)
+- [list-user-defined-functions](https://dataedo.com/kb/query/postgresql/list-user-defined-functions)
+- [how-to-list-out-the-user-defined-functions-and-procedures-in-postgresql](https://stackoverflow.com/questions/37179530/how-to-list-out-the-user-defined-functions-and-procedures-in-postgresql)
+- [list-all-sequences-in-a-postgres-db-8-1-with-sql](https://stackoverflow.com/questions/1493262/list-all-sequences-in-a-postgres-db-8-1-with-sql)
 
 I combined those sources and made a more powerful and easier to use extension.
 
