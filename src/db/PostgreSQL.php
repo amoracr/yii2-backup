@@ -671,7 +671,7 @@ class PostgreSQL extends Database
                 $currentTable = $table;
                 $sql .= "\n-- Constraints for table '$table'\n";
             }
-            $sql .= sprintf("ALTER TABLE ONLY %s.%s ADD CONSTRAINT %s %s;\n", trim($schema), trim($table), trim($constraint), trim($def));
+            $sql .= sprintf("ALTER TABLE ONLY %s.%s ADD CONSTRAINT \"%s\" %s;\n", trim($schema), trim($table), trim($constraint), trim($def));
         }
         $this->saveToFile("$sql");
     }
@@ -709,7 +709,7 @@ class PostgreSQL extends Database
                 $sql .= "\n-- Foreign Keys for table '$table'\n";
             }
 
-            $sql .= sprintf("ALTER TABLE ONLY %s.%s ADD CONSTRAINT %s %s;\n", trim($schema), trim($table), trim($constraint), trim($def));
+            $sql .= sprintf("ALTER TABLE ONLY %s.%s ADD CONSTRAINT \"%s\" %s;\n", trim($schema), trim($table), trim($constraint), trim($def));
         }
         $this->saveToFile("$sql\n");
     }
