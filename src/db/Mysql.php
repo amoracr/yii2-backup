@@ -182,13 +182,19 @@ class Mysql extends Database
     protected function dumpProcedure($procedure)
     {
         $escapedName = $this->escapeName($procedure);
-        $this->saveToFile("\n-- Procedure $escapedName\nDROP PROCEDURE IF EXISTS $escapedName;\n");
+        $this->saveToFile("\n-- Procedure $escapedName\nDROP PROCEDURE IF EXISTS $procedure;\n");
 
         $this->saveToFile("DELIMITER ;;\n\n");
-        $res = $this->connection->query("SHOW CREATE PROCEDURE $escapedName");
+        $res = $this->connection->query("SHOW CREATE PROCEDURE $procedure");
         $row = $res->fetch_assoc();
         $sql = (is_array($row) && isset($row['Create Procedure'])) ? $row['Create Procedure'] : '';
-        $this->saveToFile("$sql;\n\n");
+        $sql = preg_replace([
+            '/ALGORITHM\s*=\s*\w+/i',
+            '/DEFINER\s*=\s*\`?\w.*\`?\@\`?[\w|\.|\%]+\`?/i',
+            '/SQL SECURITY DEFINER/i',
+            ], '', $sql);
+        $sql = preg_replace('/\s+/', ' ', $sql);
+        $this->saveToFile("$sql;;\n\n");
         $this->saveToFile("DELIMITER ;\n\n");
         $res->close();
     }
@@ -273,6 +279,12 @@ class Mysql extends Database
         $res = $this->connection->query("SHOW CREATE TABLE $escapedName");
         $row = $res->fetch_assoc();
         $sql = (is_array($row) && isset($row['Create View'])) ? $row['Create View'] : '';
+        $sql = preg_replace([
+            '/ALGORITHM\s*=\s*\w+/i',
+            '/DEFINER\s*=\s*\`?\w.*\`?\@\`?[\w|\.|\%]+\`?/i',
+            '/SQL SECURITY DEFINER/i',
+            ], '', $sql);
+        $sql = preg_replace('/\s+/', ' ', $sql);
         $this->saveToFile("$sql;\n\n");
         $res->close();
     }
