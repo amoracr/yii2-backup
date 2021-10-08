@@ -188,8 +188,10 @@ class Sqlite extends Database
     {
         $this->saveToFile("\n-- Trigger `$tableTrigger`\n");
         $this->saveToFile("DROP TRIGGER IF EXISTS `$tableTrigger`;\n");
-        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = '$tableTrigger'") . ";";
+        $this->saveToFile("DELIMITER ;;\n");
+        $sql = $this->connection->querySingle("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = '$tableTrigger'") . ";;";
         $this->saveToFile("$sql\n");
+        $this->saveToFile("DELIMITER ;\n\n");
     }
 
     /**
