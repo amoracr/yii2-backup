@@ -54,6 +54,9 @@ class Backup extends Component
     /** @var string Path/Alias to folder for backups storing. */
     public $backupDir = '';
 
+    /** @var boolean for add or not db in it. */
+    public $withoutDb = false;
+
     /**
      * Number of seconds after which the file is considered deprecated and
      * will be deleted during clean up.
@@ -132,9 +135,12 @@ class Backup extends Component
     {
         $this->validateSettings();
         $this->openArchive();
-        foreach ($this->databases as $database) {
-            $this->backupDatabase($database);
+        if ($this->withoutDb == false) {
+            foreach ($this->databases as $database) {
+                $this->backupDatabase($database);
+            }
         }
+
         foreach ($this->directories as $name => $folder) {
             $this->backupFolder($name, $folder);
         }
@@ -321,11 +327,13 @@ class Backup extends Component
      */
     protected function validateDatabases()
     {
-        if (!is_array($this->databases)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
-        }
-        if (empty($this->databases)) {
-            throw new InvalidConfigException('"' . get_class($this) . '::databases" can not be empty"');
+        if ($this->withoutDb == false) {
+            if (!is_array($this->databases)) {
+                throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
+            }
+            if (empty($this->databases)) {
+                throw new InvalidConfigException('"' . get_class($this) . '::databases" can not be empty"');
+            }
         }
         return true;
     }
@@ -481,6 +489,7 @@ class Backup extends Component
         } else {
             $flag = false;
         }
+
         return $flag;
     }
 
@@ -568,10 +577,9 @@ class Backup extends Component
         };
 
         $files = FileHelper::findFiles($backupsFolder, [
-                'recursive' => false,
-                'filter' => $filter,
+            'recursive' => false,
+            'filter' => $filter,
         ]);
         return $files;
     }
-
 }
