@@ -135,7 +135,7 @@ class Backup extends Component
     {
         $this->validateSettings();
         $this->openArchive();
-        if ($this->withoutDb == false) {
+        if ($this->withoutDb === false) {
             foreach ($this->databases as $database) {
                 $this->backupDatabase($database);
             }
@@ -327,7 +327,7 @@ class Backup extends Component
      */
     protected function validateDatabases()
     {
-        if ($this->withoutDb == false) {
+        if ($this->withoutDb === false) {
             if (!is_array($this->databases)) {
                 throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
             }
@@ -577,9 +577,10 @@ class Backup extends Component
         };
 
         $files = FileHelper::findFiles($backupsFolder, [
-            'recursive' => false,
-            'filter' => $filter,
+                'recursive' => false,
+                'filter' => $filter,
         ]);
         return $files;
     }
+
 }
