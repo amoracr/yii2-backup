@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom command for PostgreSQL databases
 - Support for MSSQL databases.
 
+## [1.4.0] 2022-01-01
+### Added
+- Option for skipping databases in backup.
+
 ## [1.3.3] 2021-09-09
 ### Changed
 - Validation for backupDir property.
