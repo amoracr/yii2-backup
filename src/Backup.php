@@ -54,7 +54,7 @@ class Backup extends Component
     /** @var string Path/Alias to folder for backups storing. */
     public $backupDir = '';
 
-    /** @var boolean for add or not db in it. */
+    /** @var bool Flag for skipping databases in backup file. */
     public $withoutDb = false;
 
     /**
@@ -135,6 +135,7 @@ class Backup extends Component
     {
         $this->validateSettings();
         $this->openArchive();
+
         if ($this->withoutDb === false) {
             foreach ($this->databases as $database) {
                 $this->backupDatabase($database);
@@ -167,8 +168,10 @@ class Backup extends Component
             return false;
         }
 
-        foreach ($this->databases as $database) {
-            $this->extractDatabase($database);
+        if ($this->withoutDb === false) {
+            foreach ($this->databases as $database) {
+                $this->extractDatabase($database);
+            }
         }
 
         foreach ($this->directories as $name => $folder) {
@@ -327,6 +330,9 @@ class Backup extends Component
      */
     protected function validateDatabases()
     {
+        if (!is_bool($this->withoutDb)) {
+            throw new InvalidConfigException('"' . get_class($this) . '::withoutDb" should be bool, "' . gettype($this->withoutDb) . '" given.');
+        }
         if ($this->withoutDb === false) {
             if (!is_array($this->databases)) {
                 throw new InvalidConfigException('"' . get_class($this) . '::databases" should be array, "' . gettype($this->databases) . '" given.');
