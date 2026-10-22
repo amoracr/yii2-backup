@@ -45,7 +45,7 @@ class Mysql extends Database
         $this->validateDumpCommand();
         $dumpCommand = $this->prepareCommand($dbHandle, $this->dumpCommand);
         $file = Yii::getAlias($path) . DIRECTORY_SEPARATOR . $dbHandle . '.sql';
-        $command = sprintf("%s > %s 2> /dev/null", $dumpCommand, $file);
+        $command = sprintf("%s > %s", $dumpCommand, $file);
         system($command);
 
         if (!file_exists($file)) {
@@ -63,7 +63,7 @@ class Mysql extends Database
     {
         $this->validateLoadCommand();
         $importCommand = $this->prepareCommand($dbHandle, $this->loadCommand);
-        $command = sprintf("%s < %s 2> /dev/null", $importCommand, $file);
+        $command = sprintf("%s < %s", $importCommand, $file);
         system($command);
 
         return true;
@@ -76,9 +76,10 @@ class Mysql extends Database
     {
         $command = $templateCommand;
         $database = Yii::$app->$dbHandle->createCommand("SELECT DATABASE()")->queryScalar();
+        $host = explode("=", explode(';', Yii::$app->getDb()->dsn)[0])[1];
         $params = [
             'username' => Yii::$app->$dbHandle->username,
-            'host' => 'localhost',
+            'host' => $host,
             'password' => Yii::$app->$dbHandle->password,
             'db' => $database,
         ];
